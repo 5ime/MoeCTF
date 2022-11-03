@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <link rel="stylesheet" href="/public/static/css/icon.css">
+    <link rel="stylesheet" href="/public/static/css/login/css/style.css">
+    <script src="/public/static/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="/public/static/css/layer.css" id="layuicss-layer">
+    <script src="/public/static/js/layer.js"></script>
+</head>
+<body>
+<div class="card">
+    <h2>Login</h2>
+    <div class="form-group">
+        <p class="name">登录名</p>
+        <input name="username" type="text" placeholder="请输入登录名" required>
+        <i class="iconfont icon-user"></i>
+    </div>
+    <div class="form-group">
+        <p class="name">用户密码</p>
+        <input name="password" type="password" placeholder="请输入密码" required>
+        <i class="iconfont icon-lock"></i>
+    </div>
+    <div class="form-group">
+        <p class="name">验证码</p>
+        <div class="checkcode">
+            <img id="checkcode" src="{:captcha_src()}" onclick="this.src='{:captcha_src()}?'+new Date().getTime();" width="200" height="40">
+            <input name="checkcode" id="code" type="text" placeholder="请输入验证码" required>
+        </div>
+    </div>
+    <button type="submit" id="post">登录</button>
+    <hr class="or">
+    <a class="register" href="register">注册账号</a>
+</div>
+<div class="copy">
+    <p>Powered By <a href="https://github.com/5ime/moectf" target="_blank">MoeCTF</a></p>
+</div>
+<script>
+    $(document).keyup(function(event) {
+        if (event.keyCode == 13) {
+            $("#post").click();
+        }
+    });
+
+    $('#post').click(function() {
+        var username = $('input[name=username]').val();
+        var password = $('input[name=password]').val();
+        var checkcode = $('input[name=checkcode]').val();
+        var check = $('#check').val();
+        $.ajax({
+            url: "{:url('user/login')}",
+            type: 'post',
+            data: {
+                username: username,
+                password: password,
+                checkcode: checkcode,
+            },
+            success: function(res) {
+                if (res.code == 200) {
+                    document.cookie = "islogin=1;path=/";
+                    layer.msg(res.msg, {icon: 1});
+                    setTimeout(function() {
+                        window.location.href = '/';
+                    }, 500);
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                    setTimeout(function() {
+                        $('#checkcode').click();
+                    }, 500);
+                }
+            }
+        })
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{include file="header" title="$title" /}
+    <div class="page-title i-card-main">
+        <i class="iconfont icon-page"></i>
+        <span>USER LIST</span>
+    </div>
+    <div class="i-card-main">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>SolveID</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Score</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <nav aria-label="Page navigation example" id="page" style="display: none;">
+            <ul class="pagination justify-content-center">
+            </ul>
+        </nav>
+    </div>  
+</div>
+{include file="footer" /}
+<script>
+$(".loading").show();
+$(".i-card-main").eq(1).hide();
+var page = getUrlParam("page") || 1;
+
+$(document).ready(function(){
+    $.get("/api/v1/getChallengeList?page=" + page,function(res){
+        var data = res.data.data;
+        var html = "";
+        if(res.code == 200 ){
+            for(var i = 0; i < data.length; i++){
+                html += "<tr><th scope='row'>" + data[i].id + "</th>";
+                html += "<td>" + data[i].title + "</td>";
+                html += "<td>" + data[i].category + "</td>";
+                html += "<td>" + data[i].score + "</td>";
+                html += "<td><span class='badge badge-primary' id='" + data[i].id + "'>修改</span> <span class='badge badge-danger' id='" + data[i].id + "'>删除</span></td></td>";
+            }
+            getPage(res)
+            $("tbody").html(html);
+            $(".loading").hide();
+            $(".i-card-main").eq(1).show();
+        }else{
+            layer.msg(data.msg);
+        }
+    });
+});
+
+$("tbody").on("click","span",function(){
+    var id = $(this).attr("id");
+    if($(this).hasClass("badge-primary")){
+        window.location.href = "/admin/editChallenge/" + id;
+    }else{
+        layer.alert('确定要删除此用户吗！？', {
+		icon: 5,
+		btn: ['确定', '取消'],
+		yes: function(index) {
+			layer.close(index);
+            $.post("/api/v1/deleteChallenge",{"id":id},function(res){
+                if(res.code == 200){
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },1000);
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+        }
+    });}
+});
+
+</script>
+ </body></html>

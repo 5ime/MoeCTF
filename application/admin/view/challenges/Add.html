@@ -1,0 +1,237 @@
+{include file="header" title="$title" /}
+    <div class="page-title i-card-main">
+        <i class="iconfont icon-page"></i>
+        <span>EDIT CHALLENGES</span>
+    </div>
+    <div class="i-card-main">
+        <div class="row" id="challenges" style="padding: 20px;">
+            <div class="col-lg-7">
+            <form>
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <label>挑战标题</label>
+                        <input type="text" class="form-control" id="title" placeholder="请输入标题" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>挑战分类</label>
+                        <select class="custom-select" id="category">
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>挑战分数</label>
+                        <input type="text" class="form-control" id="score" placeholder="100" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <label>标签</label>
+                        <input type="text" class="form-control" id="tags" placeholder="tags1,tags2,tags3">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Flag</label>
+                        <input type="text" class="form-control" id="flag" placeholder="flag{...}"  required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>状态</label>
+                        <select class="custom-select" id="state">
+                            <option>Hidden</option>
+                            <option>Display</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>挑战费用</label>
+                        <input type="text" class="form-control" id="money" placeholder="0" value="0" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                    <label>挑战附件</label>
+                        <div class="custom-file">
+                            <input type="file" onchange="postData()" id="uploadFile" class="custom-file-input" id="customFile">
+                            <label class="custom-file-label" for="customFile">Choose file</label>
+                            <span class="fileurl" style="display: none;"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <label>挑战描述</label>
+                        <textarea class="form-control" id="content" placeholder="This is CTF<br>hmmm..."></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Hint</label>
+                        <textarea class="form-control" id="hint" placeholder="This is Hint<br>hmmm..."></textarea>   
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit">Submit form</button>
+            </form>
+            </div>
+            <div class="col-lg-5">
+                <div class="modal-content challenge-info">
+                    <div class="modal-header">
+                        <h6 class="modal-title active" id="challenge"><a>题目</a> </h6>
+                        <h6 class="modal-title" id="ranking"> <a>解题榜</a></h6> 
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="form">
+                        <div class="title">标题</div>
+                        <hr>
+                        <div class="content">内容</div>
+                        <span class="but">
+                            <div class="download" style="display: none;"><a class="btn btn-secondary" href="" target="_blank">下载附件</a></div>
+                            <div class="hint" style="display: none;"><a class="btn btn-info" data-toggle="modal" data-target="#hintModal">查看提示</a></div>
+                        </span>
+                        <hr>
+                        <div class="form-input">
+                            <fieldset disabled>
+                                <div class="form-group">
+                                    <input name="flag" type="text" placeholder="Disabled input">
+                                    <i class="iconfont icon-post"></i>
+                                </div>
+                            </fieldset>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary">Close</button>
+                                <button type="button" class="btn btn-primary">确认</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+</div>
+<div class="modal fade" id="hintModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="hint">Hint</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" id="hintData"></div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+{include file="footer" /}
+<script>
+$("#challenges #title").keyup(function(){
+    $(".challenge-info .title").text($(this).val());
+});
+$("#challenges #content").keyup(function(){
+    $(".content").html($(this).val());
+});
+$("#challenges #hint").keyup(function(){
+    if($(this).val()){
+        $(".but .hint").show();
+        $('#hintData').html($(this).val())
+    }else{
+        $(".but .hint").hide();
+    }
+});
+$("#challenges #tags").keyup(function(){
+    $(".tags").html($(this).val());
+});
+$("#challenges #flag").keyup(function(){
+    $(".flag").html($(this).val());
+});
+$("#challenges #score").keyup(function(){
+    $(".score").html($(this).val());
+});
+$("#challenges #money").keyup(function(){
+    $(".money").html($(this).val());
+});
+$("#challenges #category").change(function(){
+    $(".category").html($(this).val());
+});
+$("#challenges #state").change(function(){
+    $(".state").html($(this).val());
+});
+
+$(".loading").show();
+$(".i-card-main").eq(1).hide();
+var page = getUrlParam("page") || 1;
+
+$(document).ready(function(){
+    $.get("/api/v1/getCategory",function(res){
+        if(res.code == 200 ){
+          var data = res.data;
+          html = '';
+            for(var i = 0; i < data.length; i++){
+              html += '<option>'+data[i].name+'</option>';
+            }
+            $(".custom-select").eq(0).append(html);
+        }else{
+            layer.msg(data.msg);
+        }
+        setTimeout(function () {
+            $(".loading").hide();
+            $(".i-card-main").eq(1).show();
+        }, 500);
+    });
+});
+
+$("form").on("click",".btn-primary",function(){
+    var title = $("#challenges #title").val();
+    var category = $("#challenges #category").val();
+    var score = $("#challenges #score").val();
+    var money = $("#challenges #money").val();
+    var content = $("#challenges #content").val();
+    var hint = $("#challenges #hint").val();
+    var tags = $("#challenges #tags").val();
+    var flag = $("#challenges #flag").val();
+    var state = $("#challenges #state").val();
+    var fileurl = $("#challenges .fileurl").text();
+    state = state == "Hidden" ? 0 : 1;
+    var data = {
+        title:title,
+        category:category,
+        score:score,
+        money:money,
+        content:content,
+        hint:hint,
+        tags:tags,
+        flag:flag,
+        state:state,
+        download:fileurl
+    }
+    $.post("/api/v1/addChallenge",data,function(res){
+        if(res.code == 200 ){
+            layer.msg(res.msg);
+            setTimeout(function(){
+                window.location.href = "/admin/challenges?page="+page;
+            },1000);
+        }else{
+            layer.msg(res.msg);
+        }
+    });
+    return false;
+});
+
+function postData() {
+    var formData = new FormData();
+    formData.append("file", $("#uploadFile")[0].files[0]);
+    $.ajax({
+        url: '/api/v1/uploadFile',
+        type: "post",
+        data: formData,
+        processData: false,
+        contentType: false, 
+        dataType: 'text',
+        success: function (res) {         
+            var data = JSON.parse(res);
+            if (data.code == 200) {
+                layer.msg(data.msg, {icon: 1});
+                $('.custom-file label').text(data.data.name);
+                $('.fileurl').text(data.data.url);
+                $('.download').show();
+                $(".download a").attr('href','/'+data.data.url);
+            }
+        }
+    });
+}
+</script>
+ </body></html>

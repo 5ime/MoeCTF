@@ -1,0 +1,125 @@
+{include file="header" title="$title" /}
+    <div class="page-title i-card-main">
+        <i class="iconfont icon-page"></i>
+        <span>SORT LIST</span>
+        <div class="add" data-toggle='modal' data-target='#sortmodal'>
+            <span><i class="iconfont icon-add"> 添加分类</i></span>
+        </div>
+    </div>
+    <div class="modal fade" id="sortmodal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">分类管理</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="hintData">
+                <div class="form-group">
+                    <input name="sortname" type="text" placeholder="请输入分类名">
+                    <input name="sortid" type="text" style="display: none;">
+                    <i class="iconfont icon-post"></i>
+                </div>
+            </div>
+            <div class="modal-footer" id="sortBut">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="update" class="btn btn-primary">确认</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="i-card-main">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>名称</th>
+                <th>挑战数</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <nav aria-label="Page navigation example" id="page" style="display: none;">
+            <ul class="pagination justify-content-center">
+            </ul>
+        </nav>
+    </div>  
+</div>
+{include file="footer" /}
+<script>
+$(".loading").show();
+$(".i-card-main").eq(1).hide();
+var page = getUrlParam("page") || 1;
+
+$('.add').click(function(){
+    $('#sortmodal .modal-title').text('新增分类')
+})
+$('#sortmodal .modal-title').text('修改分类')
+
+$(document).ready(function(){
+    $.get("/api/v1/getSortList?page=" + page,function(res){
+        if(res.code == 200 ){
+            var data = res.data.data;
+            var html = "";
+            for(var i = 0; i < data.length; i++){
+                html += "<tr><th scope='row'>" + data[i].id + "</th>";
+                html += "<td>" + data[i].name + "</td>";             
+                html += "<td>" + data[i].count + "</td>";   
+                html += "<td><span class='badge badge-primary' data-toggle='modal' data-target='#sortmodal' id='" + data[i].id + "'>修改</span> <span class='badge badge-danger' id='" + data[i].id + "'>删除</span></td></tr>";
+            }
+            getPage(res)
+            $("tbody").html(html);
+            $(".loading").hide();
+            $(".i-card-main").eq(1).show();
+        }else{
+            layer.msg(data.msg);
+        }
+
+    });
+});
+
+$("tbody").on("click","span",function(){
+    var id = $(this).attr("id");
+    var name = $(this).parent().parent().children().eq(1).text();
+    if($(this).hasClass("badge-primary")){
+        $('#sortmodal .modal-body input[name="sortname"]').val(name);
+        $('#sortmodal .modal-body input[name="sortid"]').val(id);
+    }else{
+        layer.alert('确定要删除此分类吗！？', {
+		icon: 5,
+		btn: ['确定', '取消'],
+		yes: function(index) {
+			layer.close(index);
+            $.post("/api/v1/deleteSort",{"id":id},function(res){
+                if(res.code == 200){
+                    layer.msg(res.msg);
+                    setTimeout(function(){
+                        window.location.reload();
+                    },500);
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+        }
+    });}
+});
+
+$('#sortBut #update').click(function(){
+    var name = $('#sortmodal .modal-body input[name="sortname"]').val();
+    var id = $('#sortmodal .modal-body input[name="sortid"]').val();
+    $.post("/api/v1/editSort",{"id":id,"name":name},function(res){
+        if(res.code == 200){
+            layer.msg(res.msg);
+            setTimeout(function(){
+                window.location.reload();
+            },500);
+        }else{
+            layer.msg(res.msg);
+        }
+    });
+});
+
+</script>
+ </body></html>

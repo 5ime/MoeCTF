@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <link rel="stylesheet" href="/public/static/css/icon.css">
+    <link rel="stylesheet" href="/public/static/css/login/css/style.css">
+    <script src="/public/static/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="/public/static/css/layer.css" id="layuicss-layer">
+</head>
+<body>
+<div class="card">
+    <h2>Register</h2>
+        <div class="form-group">
+            <p class="name">登录名</p>
+            <input name="username" type="text" placeholder="请输入登录名" required>
+            <i class="iconfont icon-user"></i>
+        </div>
+        <div class="form-group">
+            <p class="name">密码</p>
+            <input name="password" id="password" type="password" placeholder="请输入密码" required>
+            <i class="iconfont icon-lock"></i>
+            <p class="tips" id="pass-tips">必须同时包含大写/小写字母和数字</p>
+        </div>
+        <div class="form-group">
+            <p class="name">确认密码</p>
+            <input name="topassword" id="topassword" type="password" placeholder="请二次输入密码" required>
+            <i class="iconfont icon-lock"></i>
+            <p class="tips" id="topass-tips">两次输入密码不一致</p>
+        </div>
+        <div class="form-group">
+            <p class="name">电子邮箱</p>
+            <input name="email" id="email" type="email" placeholder="请输入邮箱地址" required>
+            <i class="iconfont icon-email"></i>
+            <p class="tips" id="mail—tips">您输入的邮箱地址不正确</p>
+        </div>
+        <div class="form-group">
+            <p class="name">验证码</p>
+            <div class="checkcode">
+                <img id="checkcode" src="{:captcha_src()}" onclick="this.src='{:captcha_src()}?'+new Date().getTime();" width="200" height="40">
+                <input name="checkcode" type="text" placeholder="请输入验证码" required>
+            </div>
+        </div>
+        <button id="register" type="submit">注册</button>
+        <hr class="or">
+        <a class="register" href="login">登录账号</a>
+    </div>
+    <div class="copy">
+        <p>Powered By <a href="#" target="_blank">iami233</a></p>
+    </div>
+</div>
+<script src="/public/static/css/login/js/main.js"></script>
+<script src="/public/static/js/layer.js"></script>
+<script>
+    $(document).keyup(function(event) {
+        if (event.keyCode == 13) {
+            $("#register").click();
+        }
+    });
+
+
+    $("#password").blur(function () {
+        var password = $("#password").val();
+        var reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/;
+        if (!reg.test(password)) {
+            $('#pass-tips').css('display', 'inline');
+        } else {
+            $('#pass-tips').hide();
+        }
+    });
+
+    $("#topassword").blur(function () {
+        var password = $("#password").val();
+        var topassword = $("#topassword").val();
+        if (password != topassword) {
+            $('#topass-tips').css('display', 'inline');
+        } else {
+            $('#topass-tips').hide();
+        }
+    });
+
+    $("#email").blur(function () {
+        var email = $("#email").val();
+        var reg = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
+        if (!reg.test(email)) {
+            $('#mail—tips').css('display', 'inline');
+        } else {
+            $('#mail—tips').hide();
+        }
+    });
+
+    $('#register').click(function() {
+        var username = $('input[name=username]').val();
+        var password = $('input[name=password]').val();
+        var email= $("input[name='email']").val();
+        var checkcode = $('input[name=checkcode]').val();
+        var check = $('#check').val();
+        $.ajax({
+            url: "/user/register.html",
+            type: 'post',
+            data: {
+                username: username,
+                password: password,
+                email: email,
+                checkcode: checkcode,
+            },
+            success: function(res) {
+                if (res.code == 200) {
+                    layer.msg(res.msg, {icon: 1});
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                    setTimeout(function() {
+                        $('#checkcode').click();
+                    }, 500);
+                }
+            }
+        })
+    })
+</script>
+</body>
+</html>

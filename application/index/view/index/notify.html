@@ -1,0 +1,45 @@
+{include file="header" title="$title" /}
+    <div class="i-card-main">
+        <p><i class="iconfont icon-page"></i> NOTIFY PAGE</p>
+    </div>
+    <div class="i-card-main">
+        <div class="i-card-title">
+            <p>Notify</p>
+        </div>
+        <div class="notifyList"></div>
+    </div>
+    <nav aria-label="Page navigation example" id="page" style="display: none;">
+        <ul class="pagination justify-content-center">
+        </ul>
+    </nav>
+</div>
+{include file="footer" /}
+<script>
+$(".loading").show();
+$(".i-card-main").eq(1).hide();
+var page = getUrlParam("page") || 1;
+$(document).ready(function(){
+    $.get("/api/v1/getAllNotify?page=" + page, function(res){
+        if(res.code == 200 ){
+            var data = res.data.data;
+            console.log(data.length);
+            var html = "";
+            for(var i = 0; i < data.length; i++){
+                var time = timestampToTime(data[i].time).split(" ");
+                html += "<div class='media'><span><span>"+ time[0] +"</span><br><span>"+ time[1] +"</span></span><hr><div class='media-body'><h5 class='mt-0'>"+ data[i].title +"</h5><p>"+ data[i].content +"</p></div></div>";
+            }
+            $(".notifyList").html(html);
+            setTimeout(function () {
+                $(".loading").hide();
+                $(".i-card-main").eq(1).show();
+                getPage(res)
+            }, 500);
+        }else{
+            layer.msg(res.msg);
+            $(".loading").hide();
+        }
+    });
+});
+</script>
+</body>
+</html>

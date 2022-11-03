@@ -1,0 +1,41 @@
+{include file="header" title="$title" /}
+    <div class="i-card-main">
+        <p><i class="iconfont icon-page"></i> VERIFY PAGE</p>
+    </div>
+    <div class="i-card-main">
+        <div class="i-card-title">
+            <p>{$subtitle}</p>
+        </div>
+        <div class="content">
+            {$content|raw}
+        </div>
+    </div>
+</div>
+{include file="footer" /}
+<script>
+$(".loading").show();
+$(".i-card-main").eq(1).hide();
+var url = window.location.href.split('/');
+
+$(document).ready(function(){
+    $.get("/api/v1/verifyEmail/" + url[url.length-1], function(res){
+        if(res.code == 200 ){
+            var html = "<center><h1>恭喜你激活成功<h1></center>";
+            $(".content").html(html);
+            setTimeout(function () {
+                $(".loading").hide();
+                $(".i-card-main").eq(1).show();
+            }, 500);
+        }else{
+            var html = "<center><h1>激活失败,"+ res.msg +"<h1></center>";
+            $(".content").html(html);
+            setTimeout(function () {
+                $(".loading").hide();
+                $(".i-card-main").eq(1).show();
+            }, 500);
+        }
+    });
+});
+</script>
+</body>
+</html>

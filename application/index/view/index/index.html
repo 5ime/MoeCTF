@@ -1,0 +1,299 @@
+{include file="header" title="$title" /}
+    <div class="i-card-main">
+        <p><i class="iconfont icon-page"></i> DASHBOARD PAGE</p>
+    </div>
+    <div class="row" id="category">
+        <div class="col">
+            <div class="i-card-main">
+                <div class="nav-list">
+                    <ul class="sort">
+                        <span class="title">Sort</span>
+                        <li class="active">
+                            <span id="all">ALL</span>
+                        </li>
+                    </ul>
+                    <ul class="state">
+                        <span class="title">State</span>
+                        <li class="active"><span id="all">ALL</span></li>
+                        <li><span id="unsolved">Unsolved</span></li>
+                        <li><span id="resolved">Resolved</span></li> 
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="challenges"></div>
+    <nav aria-label="Page navigation example" id="page" style="display: none;">
+        <ul class="pagination justify-content-center">
+        </ul>
+    </nav>
+    <div class="modal fade" id="challengeModal" data-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content challenge-info">
+                <div class="modal-header">
+                    <h6 class="modal-title active" id="challenge"><a>Challenge</a> </h6>
+                    <h6 class="modal-title" id="ranking"> <a>Resolved</a></h6> 
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="ranking" style="display: none;">
+                    <table class="table" style="margin-top: 0">
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="form">
+                    <div class="id" style="display: none"></div>
+                    <div class="title"></div><hr>
+                    <div class="content"></div>
+                    <span class="but">
+                        <div class="download" style="display: none;"><a class="btn btn-secondary" href="" target="_blank">Download file</a></div>
+                        <div class="hint" style="display: none;"><a class="btn btn-info" data-toggle="modal" data-target="#hintModal">查看提示</a></div>
+                    </span>
+                    <hr>
+                    <div class="form-input">
+                        <div class="form-group">
+                            <input name="flag" type="text" placeholder="flag{}">
+                            <i class="iconfont icon-post"></i>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn bot-close btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" id="postFlag" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="hintModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Hint</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" id="hintData"></div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="buyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Buy</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" id="buyData"></div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">确认</button>
+        </div>
+        </div>
+    </div>
+</div>
+{include file="footer" /}
+<script>
+$(".loading").show();
+$("#category").hide();
+$(".close, .bot-close").click(function () {
+  $("input[name='flag']").val("");
+});
+
+$(document).ready(function () {
+  $.get("/api/v1/getCategory", function (res) {
+    if (res.code == 200) {
+      let sort = res.data;
+      let html = "";
+      for (let i = 0; i < sort.length; i++) {
+        html +='<li><span id="' + sort[i].name + '">' + sort[i].name + "</span></li>";
+      }
+      $(".sort").append(html);
+    } else {
+      layer.msg(res.msg);
+    }
+  });
+  $.get("/api/v1/getChallenges?page=" + page, function (res) {
+    if (res.code == 200) {
+      var html = getChallenges(res)
+      setTimeout(function () {
+    $("#category").show();
+    $("#challenges").html(html);
+    getPage(res);
+    $(".loading").hide();
+    }, 500);
+    } else {
+      layer.msg(res.msg);
+      $(".loading").hide();
+    }
+  });
+  var hash = window.location.hash;
+  if (hash) {
+    var hashArr = hash.split("solve-");
+    $.get("/api/v1/getChallengeInfo/" + hashArr[1]).then((res) => {
+      if (res.code == 200) {
+        setTimeout(function () {
+            getChallengeInfo(res)
+        }, 500);
+      } else {
+        layer.msg(res.msg);
+      }
+      setTimeout(function () {
+        $(".loading").hide();
+      }, 500);
+    });
+  }
+});
+
+$("#challenges").on("click", ".solve-list", function () {
+  var id = $(this).children().first().text();
+  $.get("/api/v1/getChallengeInfo/" + id).then((res) => {
+    if (res.code == 200) {
+        getChallengeInfo(res)
+        window.location.hash = 'solve-'+id;
+      } else {
+        layer.msg(res.msg);
+      }
+      setTimeout(function () {
+        $(".loading").hide();
+      }, 500);
+    });
+});
+
+$("#postFlag").click(function () {
+  var flag = $("input[name='flag']").val();
+  var title = $(".challenge-info .title").text();
+  var id = $(".challenge-info .id").text();
+  $.post("/api/v1/postFlag", {
+    id: id,
+    title: title,
+    flag: flag
+  }).then((res) => {
+    if (res.code == 200) {
+      layer.msg(res.msg, { icon: 1 });
+      $(".challenge-info .form-input").hide();
+    } else {
+      layer.msg(res.msg, { icon: 2 });
+    }
+  });
+});
+
+$(".challenge-info .modal-header .modal-title").click(function () {
+  if (!$(this).hasClass("active")) {
+    $(".challenge-info .modal-header .modal-title").removeClass("active");
+    $(this).addClass("active");
+  }
+  if ($(this).attr("id") == "ranking") {
+    $(".ranking").show();
+    $(".loading").show();
+    $(".challenge-info .form").hide();
+    var id = $(".challenge-info .form .id").text();
+    $.post("api/v1/getSolveRank", { id: id }).then((res) => {
+      if (res.code == 200) {
+        var html = "";
+        for (var i = 0; i < res.data.length; i++) {
+          html += "<tr><td>" + res.data[i].username + "</td><td>" + timestampToTime(res.data[i].time) + "</td></tr>";
+        }
+      } else {
+        html += "<tr><td>No Data</td></tr>";
+      }
+      $(".ranking tbody").html(html);
+      setTimeout(function () {
+        $(".loading").hide();
+      }, 500);
+    });
+    $(".close").click(function () {
+      setTimeout(function () {
+        $(".challenge-info #ranking").removeClass("active");
+        $(".challenge-info #challenge").addClass("active");
+        $(".ranking").hide();
+        $(".challenge-info .form").show();
+        $(".ranking tbody").html("");
+      }, 500);
+    });
+  } else {
+    $(".ranking").hide();
+    $(".challenge-info .form").show();
+  }
+  $(".loading").hide();
+});
+
+var page = getUrlParam("page") || 1;
+
+$(".nav-list").on("click", ".sort li, .state li", function () {
+  $(".loading").show();
+  $("#challenges").hide();
+  if (!$(this).hasClass("active")) {
+    $(this).parent().children().removeClass("active");
+    $(this).addClass("active");
+  }
+  var sort = $(".sort .active span").attr("id");
+  var state = $(".state .active span").attr("id");
+  $.post("api/v1/getSearchSort?page=" + page, {
+    sort: sort,
+    state: state
+  }).then((res) => {
+    if (res.code == 200) {
+      var html = getChallenges(res)
+      setTimeout(function () {
+        $("#challenges").html(html);
+        $("#challenges").show();
+        getPage(res);
+        $(".loading").hide();
+      }, 500);
+    } else {
+      layer.msg(res.msg);
+      $(".loading").hide();
+    }
+  });
+});
+
+$("#buyModal .btn-primary").click(function () {
+  var title = $(".challenge-info .title").text();
+  var id = $(".challenge-info .id").text();
+  $.post("/api/v1/buyChallenge", {
+    id: id,
+    title: title
+  }).then((res) => {
+    if (res.code == 200) {
+      layer.msg(res.msg, { icon: 1 });
+      window.location.reload();
+    } else {
+      layer.msg(res.msg, { icon: 2 });
+    }
+  });
+});
+
+ws = new WebSocket("ws://127.0.0.1:2348");
+ws.onmessage = function (e) {
+  var data = eval("(" + e.data + ")");
+  var type = data.type || "";
+  switch (type) {
+    case "init":
+      $.post(
+        "/api/v1/notify",
+        { client_id: data.client_id },
+        function (data) {},
+        "json"
+      );
+      break;
+    case "notify":
+      $("#notifyModal .modal-body p").html(data.msg);
+      $("#notifyModal").modal("show");
+      break;
+    default:
+      console.log(data);
+  }
+};
+</script>
+</body>
+</html>
