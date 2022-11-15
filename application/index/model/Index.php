@@ -17,7 +17,7 @@ class Index extends Model
             if(date('Y-m-d',time()) == date('Y-m-d',$data['sign_time'])){
                 return returnJsonData(201,'今天已经签到了');
             }
-            if($diff_time < 172800){
+            if(date('Y-m-d',time()) == date('Y-m-d',strtotime('+1 day',$data['sign_time']))){
                 $sign_days = $data['sign_days'] + 1;
             }else{
                 $sign_days = 1;
