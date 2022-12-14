@@ -231,6 +231,21 @@ class User extends Model
         $rank = Db::name('users')->order('scores desc')->select();
         $rank = array_search($id, array_column($rank, 'id'));
         
+        // 获取最近14天的提交记录
+        $time = time() - 1209600;
+        $solvelog = [];
+        foreach ($solves as $key => $value) {
+            if ($value['time'] > $time) {
+                $solvelog[$key]['time'] = date('m-d',$value['time']);
+                $solvelog[$key]['score'] = (int)$value['score'];
+                if (isset($solvelog[$key - 1]) && date('m-d',$value['time']) == date('m-d',$solves[$key - 1]['time'])) {
+                    $solvelog[$key]['score'] = $solvelog[$key - 1]['score'] + $value['score'];
+                    unset($solvelog[$key - 1]);
+                }
+            }
+        }
+        $solvelog = array_values($solvelog);
+        
         $data = [
             'username' => $userData['username'],
             'avatar' => $userData['avatar'],
@@ -245,6 +260,7 @@ class User extends Model
             'category' => $maxCategory,
             'count' => count($solves),
             'data' => $solves,
+            'solvelog' => $solvelog,
             'rank' => $rank + 1,
         ];
 

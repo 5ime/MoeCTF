@@ -9,6 +9,7 @@
             <div class="badgelist"></div>
         </div>
         <hr>
+        <canvas id="solvelog"></canvas>
         <div class="i-card-title"><p>Scoreings</p></div>
         <table class="table" id="rankings">
             <thead>
@@ -42,6 +43,7 @@
     </div>  
 </div>
 {include file="footer" /}
+<script src="/public/static/js/chart.js"></script>
 <script>
 $(".loading").show();
 $(".i-card-main").hide();
@@ -80,9 +82,61 @@ $(document).ready(function(){
                 $("#money").show();
                 $(".i-card-title").eq(1).show();
             }
+
+            var ctx = document.getElementById("solvelog");
+            ctx.height = 50;
+            let labels = [];
+            let data = [];
+
+            for (let i = 13; i >= 0; i--) {
+                let d = new Date();
+                d.setDate(d.getDate() - i);
+                labels.push(d.getMonth() + 1 + "-" + d.getDate());
+            }
+
+            if (res.data.solvelog.length == 0) {
+               data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            }else{
+                for (let i = 0; i < res.data.solvelog.length; i++) {
+                    for (let j = 0; j < labels.length; j++) {
+                        let index = labels.indexOf(res.data.solvelog[i].time);
+                        if (index != -1) {
+                            data[index] = res.data.solvelog[i].score;
+                        }
+                        if (data[j] == undefined) {
+                            data[j] = 0;
+                        }
+                    }
+                }
+            }
+
             setTimeout(function () {
                 $(".loading").hide();
                 $(".i-card-main").show();
+                new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [{                        
+                            data: data,
+                            label: "分数",
+                            borderColor: "#28c76f",
+                            backgroundColor: "rgba(40, 199, 111, 0.3)",
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: false
+                            },                            
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
                 getPage(res)
             }, 500);
         }else{
