@@ -14,6 +14,7 @@ Route::rule('clockin','index/clockin');
 Route::rule('about','index/about');
 Route::rule('notify','index/notify');
 Route::rule('verify/:id','index/verify');
+Route::rule('api/v1/sendEmail','user/sendEmail');
 Route::rule('api/v1/verifyEmail/:id','index/verifyEmail');
 Route::rule('downloadFile/:id','api/downloadFile');
 

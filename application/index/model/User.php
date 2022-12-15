@@ -131,31 +131,32 @@ class User extends Model
    {
         $arr = [
             'username' => input('post.username'),
-            'new_password' => input('post.new_password'),
             'email' => input('post.email'),
             'website' => input('post.website'),
             'content' => input('post.content'),
         ];
-        if (empty($arr['new_password'])) {
-            unset($arr['password']);
-            unset($arr['new_password']);
-        }
-        if(empty($arr['username'])){
-            unset($arr['username']);
+        $password = input('post.password');
+        $new_password = input('post.new_password');
+
+        if (!empty(@$arr['username'])) {
+            $data = Db::name('users')->where('username',$arr['username'])->find();
+            if ($data) {
+                return returnJsonData(201,'Username already exists');
+            }
         }
 
-        if (@$arr['password'] && @$arr['new_password'] ) {
-            $data = Db::name('users')->where('username',Session::get('username'))->where('password',hashPwd($arr['password']))->find();
+        if (!empty(@$password) && !empty(@$new_password)) {
+            $data = Db::name('users')->where('username',Session::get('username'))->where('password',hashPwd($password))->find();
             if (!$data) {
                 return returnJsonData(201,'Password error');
             }
-            if ($arr['password'] == $arr['new_password']) {
+            if (input('password') == $new_password) {
                 return returnJsonData(201,'New password cannot be the same as the old password');
             }
-            $arr['password'] = hashPwd($arr['new_password']);
+            $arr['password'] = hashPwd($new_password);
         }
-        unset($arr['new_password']);
-        $data = Db::name('users')->where('id',Session::get('userid'))->update($arr);
+
+        $data = Db::name('users')->where('id',Session::get('userid'))->update(array_filter($arr));
         return returnJsonData(200,'success');
    }
 
@@ -163,7 +164,7 @@ class User extends Model
 
     public function getUserInfo()
     {
-        $data = Db::name('users')->where('username',Session::get('username'))->field('username,email,avatar,state,content,website')->find();
+        $data = Db::name('users')->where('username',Session::get('username'))->field('username,email,avatar,state,content,website,verify')->find();
         if ($data) {
             return returnJsonData(200,'success',$data);
         }else{
@@ -283,5 +284,25 @@ class User extends Model
             $data['moneys'] = $moneyData;
         }
         return returnJsonData(200,'success', $data);
+    }
+
+    /* 发送激活邮件 */
+
+    function sendEmail(){
+        $username = Session::get('username');
+        $data = Db::name('users')->where('username',$username)->field('email,token,verify,mailtime')->find();
+        if (!$data || $data['verify']) {
+            return returnJsonData(201,'error');
+        }
+        $time = date('Y-m-d',$data['mailtime']);
+        if ($time == date('Y-m-d')) {
+            return returnJsonData(201,'每个用户每天只能发送1封邮件');
+        }
+        $sendEmail = sendEmail($data['email'], $username, $data['token']);
+        if(json_decode($sendEmail->getContent(),true)['code'] != 200){
+            return returnJsonData(201,'发信失败，请检查发信配置');
+        }
+        Db::name('users')->where('username',$username)->update(['mailtime' => time()]);
+        return returnJsonData(200,'success');
     }
 }

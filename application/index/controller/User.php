@@ -83,5 +83,8 @@ class User extends Base
     public function getHomeInfo(){
         return $this->userModel->getHomeInfo(); 
     }
-
+    
+    public function sendEmail(){
+        return $this->userModel->sendEmail(); 
+    }
 }

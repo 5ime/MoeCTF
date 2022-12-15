@@ -1,15 +1,11 @@
 function openNav() {
     let screen = parseInt( document.getElementById("mySidenav").style.width)
     if (screen != 170 || isNaN(screen)){
-        // if (window.outerWidth >= "550"){
-        //     document.getElementById("main").style.paddingLeft = "180px";
-        // }
         document.getElementById("mySidenav").style.width = "170px";
         document.getElementById("mySidenav").style.boxShadow = "0px 0px 5px rgb(0 0 0 / 10%);";
         document.getElementById("mySidenav").style.overflowY = "auto";
     }
     else{
-        /*document.getElementById("main").style.paddingLeft = "10px";*/
         document.getElementById("mySidenav").style.width = "0";
         document.getElementById("mySidenav").style.padding = "0";
         document.getElementById("mySidenav").style.boxShadow = "none";
@@ -20,30 +16,6 @@ function openNav() {
 $(".close, .bot-close").click(function(){
     window.location.hash = '';
 });
-
-// function getCard(){
-//     $("#staticBackdrop").attr('role', 'dialog');
-//     $("#staticBackdrop").show();
-//     $("#staticBackdrop").addClass('show');
-//     $("body").append('<div class="modal-backdrop fade show"></div>');
-//     $(".close, .bot-close").click(function(){
-//         $("#staticBackdrop").hide();
-//         $("#staticBackdrop").removeClass('show');
-//         $(".modal-backdrop").remove();
-//         window.location.hash = '';
-//     });
-//     // 如果点击模态框外面
-//     $(document).mouseup(function(e){
-//         var _con = $('.modal-content');   // 设置目标区域
-//         if(!_con.is(e.target) && _con.has(e.target).length === 0){ // Mark 1
-//             // 添加一秒后删除
-//             setTimeout(function(){
-//                 $("#staticBackdrop").addClass('modal-static');
-//             }, 100);
-//             $("#staticBackdrop").removeClass('modal-static');
-//         }
-//     });
-// }
 
 function getChallengeInfo(res){
     $(".challenge-info .id").text(res.data.id);
@@ -214,7 +186,6 @@ if (getCookie('islogin') == 1) {
             }
             $('.more .item span').html(res.data.type);
             $('.islogin #userhome a').attr('href','/home/'+res.data.userid);
-            $('.islogin #money').text('金币: '+res.data.money + ' 枚');
         }
     });
 }else {
@@ -247,11 +218,22 @@ $('#edit').click(function () {
             $('#editUser input[name="email"]').val(res.data.email);
             $('#editUser input[name="website"]').val(res.data.website);
             $('#editUser input[name="content"]').val(res.data.content);
+            if(res.data.verify){
+                $('#editUser #email span').removeClass('badge-warning').addClass('badge-success').text('已验证').removeAttr('id');
+            }
         }else{
             layer.msg(res.msg, {icon: 2});
         }
         $('.loading').hide();
     });
+});
+
+$('#editUser input[name="new_password"]').blur(function () {
+    var password = $('#editUser input[name="password"]').val();
+    var new_password = $('#editUser input[name="new_password"]').val();
+    if (!password && new_password) {
+        layer.msg('请先输入旧密码', {icon: 2});
+    }
 });
 
 $('#update').click(function () {
@@ -290,5 +272,20 @@ $(document).on('click', '#clockin, .dropdown-item #clockin', function () {
         }else{
             layer.msg(res.msg, {icon: 2});
         }
+    });
+});
+
+$(document).on('click', '#sendEmail', function () {
+    layer.confirm('确定要发送激活邮件吗？', {
+        btn: ['确定','取消']
+    }, function(){
+        layer.msg('邮件发送中...', {icon: 16,shade: 0.01});
+        $.get('/api/v1/sendEmail', function (res) {
+            if (res.code == 200) {
+                layer.msg(res.msg, {icon: 1});
+            }else{
+                layer.msg(res.msg, {icon: 2});
+            }
+        });
     });
 });

@@ -101,16 +101,14 @@
                         <input name="username" type="text" placeholder="请输入新用户名">
                         <i class="iconfont icon-user"></i>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="email">
                         <input name="email" type="text" placeholder="请输入新邮箱">
                         <i class="iconfont icon-post"></i>
+                        <span class="badge badge-warning" id="sendEmail">未验证</span>
                     </div>
                     <div class="form-group">
                         <input name="password" type="password" placeholder="请输入旧密码">
                         <i class="iconfont icon-lock"></i>
-                        <p class="tips" id="pass-tips">
-                            必须同时包含大写/小写字母和数字(不允许其他字符)
-                        </p>
                     </div>
                     <div class="form-group">
                         <input name="new_password" type="password" placeholder="请输入新密码">

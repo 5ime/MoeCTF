@@ -42,6 +42,12 @@ body {
 	overflow-x: hidden
 }
 
+@media screen and (max-width: 1400px) {
+	.main {
+		width: 100%
+	}
+}
+
 .main p {
 	margin: 0;
 	word-wrap: break-word;
@@ -456,6 +462,10 @@ body {
 	display: none
 }
 
+#sidebar ul{
+	transform: translate3d(5px, 50px, 0px) !important;
+}
+
 .i-card-main {
 	backdrop-filter: blur(30px);
 	background: rgb(255 255 255 / 100%);
@@ -522,7 +532,7 @@ thead {
 	margin: 10px 0 10px
 }
 
-.form-group>input {
+.form-group input {
 	border: none;
 	padding: 10px 0 10px 40px;
 	font-size: 16px;
@@ -533,11 +543,11 @@ thead {
 	background-color: transparent
 }
 
-.form-group>.name {
+.form-group .name {
 	font-size: 13px
 }
 
-.form-group>.iconfont {
+.form-group .iconfont {
 	position: absolute;
 	top: 8px;
 	left: 10px;
@@ -553,6 +563,25 @@ thead {
 
 .form-group input:focus+.iconfont,.form-group textarea:focus+.iconfont {
 	color: #2196f3
+}
+
+#editUser #email {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	padding-right: 3px;
+}
+
+#editUser #email input {
+	width: 88%;
+}
+
+#editUser #email .badge {
+	width: 12%;
+	line-height: 1.5;
+	font-size: 80%;
+	cursor: pointer;
 }
 
 .modal-dialog .form {
@@ -595,8 +624,7 @@ or::before{
 	.i-nav #sidebar {
 		display: inline;
 	}
-	.i-nav .left .item:nth-child(3),
-	.i-nav .left .item:nth-child(4) {
+	.i-nav .left .item:nth-child(n+3) {
 		display: none;
 	}
 }
