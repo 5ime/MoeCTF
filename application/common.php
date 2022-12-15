@@ -56,7 +56,7 @@ function sendEmail($tomail, $name, $randCode, $attachment = null) {
     $mail->AddReplyTo($replyEmail, $replyName);
     $mail->Subject = $config['title'] . '用户邮箱验证';
     $url = request()->domain();
-    $body = "亲爱的" . $name . "您好！<br>请点击此链接激活您的邮箱：" . $url . "/verifyEmail/" . base64_encode($randCode);
+    $body = "亲爱的" . $name . "您好！<br>请点击此链接激活您的邮箱：" . $url . "/verify/" . base64_encode($randCode);
     $mail->MsgHTML($body);
     $mail->AddAddress($tomail, $name);
     if (is_array($attachment)) {                           // 添加附件
