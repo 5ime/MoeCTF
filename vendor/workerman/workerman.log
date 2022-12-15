@@ -1,0 +1,82 @@
+2022-10-28 09:29:13 pid:3971 Workerman[think] start in DEBUG mode
+2022-10-28 11:11:26 pid:3971 Workerman[think] stopping ...
+2022-10-28 11:11:26 pid:3971 Workerman[think] has been stopped
+2022-10-28 11:11:31 pid:7886 Workerman[think] start in DEBUG mode
+2022-10-28 11:13:03 pid:7886 Workerman[think] stopping ...
+2022-10-28 11:13:03 pid:7886 Workerman[think] has been stopped
+2022-10-28 11:13:14 pid:7955 Workerman[think] start in DEBUG mode
+2022-10-28 11:14:20 pid:7955 Workerman[think] stopping ...
+2022-10-28 11:14:20 pid:7955 Workerman[think] has been stopped
+2022-10-28 11:14:20 pid:8021 Workerman[think] start in DEBUG mode
+2022-10-28 11:20:49 pid:8021 Workerman[think] stopping ...
+2022-10-28 11:20:49 pid:8021 Workerman[think] has been stopped
+2022-10-28 11:20:49 pid:8114 Workerman[think] start in DEBUG mode
+2022-10-28 11:24:25 pid:8114 Workerman[think] stopping ...
+2022-10-28 11:24:25 pid:8114 Workerman[think] has been stopped
+2022-10-28 11:24:26 pid:8248 Workerman[think] start in DEBUG mode
+2022-10-28 11:44:40 pid:8504 Workerman[think] start in DEBUG mode
+2022-10-28 11:44:40 pid:8504 Workerman[think] already running
+2022-10-28 11:44:43 pid:8536 Workerman[think] start in DEBUG mode
+2022-10-28 11:44:43 pid:8536 Workerman[think] already running
+2022-10-28 11:48:28 pid:2118 Workerman[think] start in DEBUG mode
+2022-10-28 14:07:04 pid:2121 exception 'Exception' with message 'You can't send(array) to client, you need to convert it to a string. ' in /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Protocols/Websocket.php:236
+Stack trace:
+#0 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Connection/TcpConnection.php(344): Workerman\Protocols\Websocket::encode(Array, Object(Workerman\Connection\TcpConnection))
+#1 /www/wwwroot/192.168.8.134/vendor/workerman/gateway-worker/src/Gateway.php(881): Workerman\Connection\TcpConnection->send(Array, false)
+#2 [internal function]: GatewayWorker\Gateway->onWorkerMessage(Object(Workerman\Connection\TcpConnection), Array)
+#3 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Connection/TcpConnection.php(656): call_user_func(Array, Object(Workerman\Connection\TcpConnection), Array)
+#4 [internal function]: Workerman\Connection\TcpConnection->baseRead(Resource id #199)
+#5 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Events/Select.php(292): call_user_func_array(Array, Array)
+#6 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(2408): Workerman\Events\Select->loop()
+#7 /www/wwwroot/192.168.8.134/vendor/workerman/gateway-worker/src/Gateway.php(290): Workerman\Worker->run()
+#8 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(1541): GatewayWorker\Gateway->run()
+#9 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(1371): Workerman\Worker::forkOneWorkerForLinux(Object(GatewayWorker\Gateway))
+#10 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(1345): Workerman\Worker::forkWorkersForLinux()
+#11 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(546): Workerman\Worker::forkWorkers()
+#12 /www/wwwroot/192.168.8.134/vendor/topthink/think-worker/src/command/GatewayWorker.php(108): Workerman\Worker::runAll()
+#13 /www/wwwroot/192.168.8.134/vendor/topthink/think-worker/src/command/GatewayWorker.php(77): think\worker\command\GatewayWorker->start('0.0.0.0', 2348, Array)
+#14 /www/wwwroot/192.168.8.134/thinkphp/library/think/console/Command.php(175): think\worker\command\GatewayWorker->execute(Object(think\console\Input), Object(think\console\Output))
+#15 /www/wwwroot/192.168.8.134/thinkphp/library/think/Console.php(675): think\console\Command->run(Object(think\console\Input), Object(think\console\Output))
+#16 /www/wwwroot/192.168.8.134/thinkphp/library/think/Console.php(261): think\Console->doRunCommand(Object(think\worker\command\GatewayWorker), Object(think\console\Input), Object(think\console\Output))
+#17 /www/wwwroot/192.168.8.134/thinkphp/library/think/Console.php(198): think\Console->doRun(Object(think\console\Input), Object(think\console\Output))
+#18 /www/wwwroot/192.168.8.134/thinkphp/library/think/Console.php(115): think\Console->run()
+#19 /www/wwwroot/192.168.8.134/think(22): think\Console::init()
+#20 {main}
+2022-10-28 14:07:04 pid:2121 Worker[2121] process terminated
+2022-10-28 14:07:04 pid:2118 worker[thinkphp:2121] exit with status 64000
+2022-10-28 14:07:50 pid:3330 exception 'Exception' with message 'You can't send(array) to client, you need to convert it to a string. ' in /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Protocols/Websocket.php:236
+Stack trace:
+#0 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Connection/TcpConnection.php(344): Workerman\Protocols\Websocket::encode(Array, Object(Workerman\Connection\TcpConnection))
+#1 /www/wwwroot/192.168.8.134/vendor/workerman/gateway-worker/src/Gateway.php(881): Workerman\Connection\TcpConnection->send(Array, false)
+#2 [internal function]: GatewayWorker\Gateway->onWorkerMessage(Object(Workerman\Connection\TcpConnection), Array)
+#3 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Connection/TcpConnection.php(656): call_user_func(Array, Object(Workerman\Connection\TcpConnection), Array)
+#4 [internal function]: Workerman\Connection\TcpConnection->baseRead(Resource id #131)
+#5 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Events/Select.php(292): call_user_func_array(Array, Array)
+#6 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(2408): Workerman\Events\Select->loop()
+#7 /www/wwwroot/192.168.8.134/vendor/workerman/gateway-worker/src/Gateway.php(290): Workerman\Worker->run()
+#8 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(1541): GatewayWorker\Gateway->run()
+#9 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(1371): Workerman\Worker::forkOneWorkerForLinux(Object(GatewayWorker\Gateway))
+#10 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(1345): Workerman\Worker::forkWorkersForLinux()
+#11 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(1675): Workerman\Worker::forkWorkers()
+#12 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(1624): Workerman\Worker::monitorWorkersForLinux()
+#13 /www/wwwroot/192.168.8.134/vendor/workerman/workerman/Worker.php(548): Workerman\Worker::monitorWorkers()
+#14 /www/wwwroot/192.168.8.134/vendor/topthink/think-worker/src/command/GatewayWorker.php(108): Workerman\Worker::runAll()
+#15 /www/wwwroot/192.168.8.134/vendor/topthink/think-worker/src/command/GatewayWorker.php(77): think\worker\command\GatewayWorker->start('0.0.0.0', 2348, Array)
+#16 /www/wwwroot/192.168.8.134/thinkphp/library/think/console/Command.php(175): think\worker\command\GatewayWorker->execute(Object(think\console\Input), Object(think\console\Output))
+#17 /www/wwwroot/192.168.8.134/thinkphp/library/think/Console.php(675): think\console\Command->run(Object(think\console\Input), Object(think\console\Output))
+#18 /www/wwwroot/192.168.8.134/thinkphp/library/think/Console.php(261): think\Console->doRunCommand(Object(think\worker\command\GatewayWorker), Object(think\console\Input), Object(think\console\Output))
+#19 /www/wwwroot/192.168.8.134/thinkphp/library/think/Console.php(198): think\Console->doRun(Object(think\console\Input), Object(think\console\Output))
+#20 /www/wwwroot/192.168.8.134/thinkphp/library/think/Console.php(115): think\Console->run()
+#21 /www/wwwroot/192.168.8.134/think(22): think\Console::init()
+#22 {main}
+2022-10-28 14:07:50 pid:3330 Worker[3330] process terminated
+2022-10-28 14:07:50 pid:2118 worker[thinkphp:3330] exit with status 64000
+2022-10-28 15:15:48 pid:2118 Workerman[think] stopping ...
+2022-10-28 15:15:49 pid:2118 Workerman[think] has been stopped
+2022-10-28 15:15:52 pid:4293 Workerman[think] start in DEBUG mode
+2022-10-28 17:57:41 pid:5663 Workerman[think] start in DEBUG mode
+2022-10-30 18:48:25 pid:2748 Workerman[think] start in DEBUG mode
+2022-10-31 09:16:38 pid:2305 Workerman[think] start in DEBUG mode
+2022-10-31 15:28:26 pid:5026 Workerman[think] start in DEBUG mode
+2022-10-31 18:50:27 pid:6981 Workerman[think] start in DEBUG mode
+2022-11-03 12:13:22 pid:2663 Workerman[think] start in DEBUG mode
