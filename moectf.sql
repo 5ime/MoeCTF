@@ -130,6 +130,7 @@ CREATE TABLE `users` (
   `verify` int(11) NOT NULL DEFAULT '0' COMMENT '用户邮箱是否验证',
   `token` varchar(255) NOT NULL DEFAULT '' COMMENT '验证token',
   `time` varchar(255) NOT NULL COMMENT '用户注册时间',
+  `mailtime` varchar(255) DEFAULT NULL COMMENT '最后一次发件时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
