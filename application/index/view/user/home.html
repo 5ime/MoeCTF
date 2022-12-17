@@ -142,6 +142,9 @@ $(document).ready(function(){
         }else{
             layer.msg(res.msg);
             $(".loading").hide();
+            setTimeout(function () {
+                window.location.href = '/';
+            }, 1000);
         }
     })
 })
