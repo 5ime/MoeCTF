@@ -9,8 +9,12 @@ class Base extends controller
     {
         parent::initialize();
         if (!Session::has('userid') && strtolower($this->request->action()) != 'login' && strtolower($this->request->action()) != 'register') {
-            returnJsonData(201, 'Please login first')->send();
-            exit;
+            if (strtolower($this->request->action()) == 'home') {
+                $this->redirect('user/login');
+            } else {
+                returnJsonData(201, 'Please login first')->send();
+                exit;
+            }
         }
     }
 }
