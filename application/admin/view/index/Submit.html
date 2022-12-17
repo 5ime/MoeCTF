@@ -1,0 +1,109 @@
+{include file="header" title="$title" /}
+    <div class="page-title i-card-main">
+        <i class="iconfont icon-page"></i>
+        <span>SUBMIT LIST</span>
+    </div>
+    <div class="i-card-main">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>User</th>
+                <th>Time</th>
+                <th>Verify</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <nav aria-label="Page navigation example" id="page" style="display: none;">
+            <ul class="pagination justify-content-center">
+            </ul>
+        </nav>
+    </div>  
+</div>
+<div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">详细信息</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="infoData">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="footer" /}
+<script>
+$(".loading").show();
+$(".i-card-main").eq(1).hide();
+var page = getUrlParam("page") || 1;
+
+$(document).ready(function(){
+    $.get("/api/v1/getSubmitList?page=" + page,function(res){
+        var data = res.data.data;
+        var html = "";
+        if(res.code == 200 ){
+            for(var i = 0; i < data.length; i++){
+                html += "<tr><th scope='row'>" + data[i].id + "</th>";
+                html += "<td>" + data[i].cid + "</td>";
+                html += "<td>" + data[i].uid + "</td>";
+                html += "<td>" + timestampToTime(data[i].time) + "</td>";
+                if(data[i].verify){
+                    html += "<td><span class='badge badge-success'>正确</span>";
+                }else{
+                    html += "<td><span class='badge badge-secondary'>错误</span>";
+                }
+                html += "<td><span class='badge badge-info' value='"+ data[i].value +"' >查看</span>";
+            }
+            getPage(res)
+            $("tbody").html(html);
+            $(".loading").hide();
+            $(".i-card-main").eq(1).show();
+        }else{
+            layer.msg(data.msg);
+        }
+    });
+});
+
+$("tbody").on("click","span",function(){
+    var id = $(this).parent().parent().children().eq(0).text();
+    if($(this).hasClass("badge-info")){
+        $.get("/api/v1/getSubmitList?page=" + page,function(res){
+            var data = res.data.data;
+            var html = "";
+            if(res.code == 200 ){
+                for(var i = 0; i < data.length; i++){
+                    if(data[i].id == id){
+                        all = '';
+                        all += '<p>题目标题：'+ data[i].cid +'</p>';
+                        all += '<p>提交用户：'+ data[i].uid +'</p>';
+                        all += '<p>提交IP：'+ data[i].ip +'</p>';
+                        all += '<p>提交时间：'+ timestampToTime(data[i].time) +'</p>';
+                        all += '<p>提交内容：'+ data[i].value +'</p>';
+                        if(data[i].verify){
+                            all += '<p>是否正确：<span class="badge badge-success">正确</span></p>';
+                        }else{
+                            all += '<p>是否正确：<span class="badge badge-secondary">错误</span></p>';
+                        }
+                        $("#infoData").html(all);
+                    }
+                }
+            }else{
+                layer.msg(data.msg);
+            }
+        });
+        $("#infoModal").modal("show");
+    }
+});
+
+</script>
+ </body></html>

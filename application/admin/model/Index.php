@@ -29,9 +29,25 @@ class Index extends Model
             return returnJsonData(201,'error');
         }
     }
-
-    public function getSiteInfo()
+    
+    public function getSubmitList()
     {
-        //
+        $id = input('get.id');
+        if ($id) {
+            $data = Db::name('submit')->where('id', $id)->order('id desc')->paginate(10)->toArray();
+        } else {
+            $data = Db::name('submit')->order('id desc')->paginate(10)->toArray();
+        }
+        foreach ($data['data'] as $key => $value) {
+            $data['data'][$key]['uid'] = Db::name('users')->where('id', $value['uid'])->value('username');
+        }
+        foreach ($data['data'] as $key => $value) {
+            $data['data'][$key]['cid'] = Db::name('challenges')->where('id', $value['cid'])->value('title');
+        }
+        if ($data) {
+            return returnJsonData(200,'success', $data);
+        } else {
+            return returnJsonData(201,'error');
+        }
     }
 }

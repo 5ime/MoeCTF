@@ -25,6 +25,12 @@ class Index extends Base
         return $this->fetch('Setting', ['title' => $title]);
     }
 
+    public function Submit()
+    {
+        $title = '提交记录';
+        return $this->fetch('Submit', ['title' => $title]);
+    }
+
     public function getSettingsInfo()
     {
         return $this->settingModel->getSettingsInfo();
@@ -33,5 +39,10 @@ class Index extends Base
     public function editSettings()
     {
         return $this->settingModel->editSettings();
+    }
+
+    public function getSubmitList()
+    {
+        return $this->settingModel->getSubmitList();
     }
 }
