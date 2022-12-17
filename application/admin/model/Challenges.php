@@ -7,7 +7,7 @@ class Challenges extends Model
 {
     public function getChallengeList()
     {
-        $data = Db::name('challenges')->field('id,title,category,score,time')->paginate(10)->toArray();
+        $data = Db::name('challenges')->field('id,title,category,score,state,time')->paginate(10)->toArray();
         if ($data) {
             return returnJsonData(200,'success', $data);
         } else {
@@ -50,6 +50,22 @@ class Challenges extends Model
         } else {
             return returnJsonData(201,'error');
         }   
+    }
+
+    public function editChallengeState()
+    {
+        $value = input('value');
+        $id = input('id');
+        switch($value){
+            case 'display':
+                Db::name('challenges')->where('id', $id)->update(['state' => 0]);
+                return returnJsonData(200, 'success');
+            case 'hidden':
+                Db::name('challenges')->where('id', $id)->update(['state' => 1]);
+                return returnJsonData(200, 'success');
+            default:
+                return returnJsonData(201, 'error');
+        }
     }
 
     public function editChallenge(){

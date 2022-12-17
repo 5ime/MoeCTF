@@ -46,6 +46,11 @@ class Challenges extends Base
         return $this->challengesModel->uploadFile();
     }
 
+    public function editChallengeState()
+    {
+        return $this->challengesModel->editChallengeState();
+    }
+
     public function editChallenge()
     {
         return $this->challengesModel->editChallenge();
