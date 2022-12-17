@@ -57,6 +57,7 @@ Route::rule('admin/editChallenge','admin/Challenges/edit');
 Route::rule('admin/sortList','admin/Sort/index');
 Route::rule('admin/notifyList','admin/Notify/index');
 Route::rule('admin/Setting','admin/index/setting');
+Route::rule('admin/Submit','admin/index/Submit');
 
 /* USER */
 Route::rule('api/v1/editUser','admin/User/editUser');
@@ -71,6 +72,7 @@ Route::rule('api/v1/addChallenge','admin/Challenges/addChallenge');
 Route::rule('api/v1/editChallenge','admin/Challenges/editChallenge');
 Route::rule('api/v1/deleteChallenge','admin/Challenges/deleteChallenge');
 Route::rule('api/v1/getChallengeAllInfo/:id','admin/Challenges/getChallengeAllInfo');
+Route::rule('api/v1/editChallengeState','admin/Challenges/editChallengeState');
 
 /* SORT */
 Route::rule('api/v1/getSortList','admin/Sort/getSortList');
@@ -85,3 +87,6 @@ Route::rule('api/v1/deleteNotify','admin/Notify/deleteNotify');
 /* SETTING */
 Route::rule('api/v1/getSettingsInfo','admin/index/getSettingsInfo');
 Route::rule('api/v1/editSettings','admin/index/editSettings');
+
+/* SUBMIT */
+Route::rule('api/v1/getSubmitList','admin/index/getSubmitList');
