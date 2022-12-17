@@ -13,18 +13,16 @@ class Index extends Model
         }
         $data = Db::table('users')->where('id',Session::get('userid'))->field('sign_time,money,sign_days')->find();
         $sign_days = 1;
-        if(!empty($data['sign_time'])){
+        if ($data['sign_time']) {
             if(date('Y-m-d',time()) == date('Y-m-d',$data['sign_time'])){
+
                 return returnJsonData(201,'今天已经签到了');
             }
             if(date('Y-m-d',time()) == date('Y-m-d',strtotime('+1 day',$data['sign_time']))){
                 $sign_days = $data['sign_days'] + 1;
-            }else{
-                $sign_days = 1;
             }
         }
         $firstMoney = $data['money'];
-        // $money = $firstMoney + 10;
         $coin = Db::name('setting')->value('money');
         if ($sign_days < 7) {
             $money = $coin;
@@ -46,7 +44,7 @@ class Index extends Model
             'time' => time()
         ];
         Db::table('money')->insert($data);
-        $res = Db::table('users')->where('id',Session::get('userid'))->update(['money' => $firstMoney + $money,'sign_time' => time(),'sign_days' => $sign_days + 1]);
+        $res = Db::table('users')->where('id',Session::get('userid'))->update(['money' => $firstMoney + $money,'sign_time' => time(),'sign_days' => $sign_days]);
         if ($res) {
             return returnJsonData(200,'success, +'.$money);
         }else{
