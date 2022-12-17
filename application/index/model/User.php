@@ -15,7 +15,6 @@ class User extends Model
             'userid' => Session::get('userid'),
             'username' => Session::get('username'),
             'avatar' => $arr['avatar'],
-            'money' => $arr['money'],
             'type' => $arr['type'] ? '管理员' : '普通用户',
             'door' => $arr['type'] ? '<a href="/admin">后台管理主页</a>' : ''
         ];
@@ -96,6 +95,7 @@ class User extends Model
             if(json_decode($sendEmail->getContent(),true)['code'] != 200){
                 return returnJsonData(201,'发信失败，请检查发信配置');
             }
+            $data['mail_time'] = time();
         }
         if($set['state']){
             return returnJsonData(201,'平台关闭注册');
@@ -203,11 +203,15 @@ class User extends Model
         if (!is_numeric($id)) {
             return returnJsonData(201,'error');
         }
-        $userData = Db::name('users')->where('id',$id)->where('state',1)->field('username,avatar,content,scores,money,website')->find();
+        if (Session::get('userid') == $id || Session::get('userid') == 1) {
+            $userData = Db::name('users')->where('id',$id)->field('username,avatar,content,scores,money,website')->find();
+        }else{
+            $userData = Db::name('users')->where('id',$id)->where('state',1)->field('username,avatar,content,scores,money,website')->find();
+        }
         if (!$userData) {
             return returnJsonData(201,'error');
         }
-        $getSolvs = Db::name('solves')->where('uid',$id)->paginate(10)->toArray();
+        $getSolvs = Db::name('submit')->where('uid',$id)->where('verify',1)->paginate(10)->toArray();
         $solves = [];
         $category = [];
         
@@ -231,7 +235,7 @@ class User extends Model
         }
         $rank = Db::name('users')->order('scores desc')->select();
         $rank = array_search($id, array_column($rank, 'id'));
-        
+
         // 获取最近14天的提交记录
         $time = time() - 1209600;
         $solvelog = [];
@@ -290,11 +294,11 @@ class User extends Model
 
     function sendEmail(){
         $username = Session::get('username');
-        $data = Db::name('users')->where('username',$username)->field('email,token,verify,mailtime')->find();
+        $data = Db::name('users')->where('username',$username)->field('email,token,verify,mail_time')->find();
         if (!$data || $data['verify']) {
             return returnJsonData(201,'error');
         }
-        $time = date('Y-m-d',$data['mailtime']);
+        $time = date('Y-m-d',$data['mail_time']);
         if ($time == date('Y-m-d')) {
             return returnJsonData(201,'每个用户每天只能发送1封邮件');
         }
@@ -302,7 +306,7 @@ class User extends Model
         if(json_decode($sendEmail->getContent(),true)['code'] != 200){
             return returnJsonData(201,'发信失败，请检查发信配置');
         }
-        Db::name('users')->where('username',$username)->update(['mailtime' => time()]);
+        Db::name('users')->where('username',$username)->update(['mail_time' => time()]);
         return returnJsonData(200,'success');
     }
 }

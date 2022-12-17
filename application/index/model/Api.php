@@ -8,7 +8,7 @@ class Api extends Model
 {
     protected function getSolved($userid)
     {
-        $solved = Db::table('solves')->where('uid',$userid)->select();
+        $solved = Db::table('submit')->where('uid',$userid)->where('verify',1)->select();
         $solved = array_column($solved,'cid');
         return $solved;
     }
@@ -185,7 +185,7 @@ class Api extends Model
         if (empty($id)) {
             return returnJsonData(201,'error');
         }
-        $data = Db::name('solves')->where('cid',$id)->order('time asc')->field('id,uid,time')->select();
+        $data = Db::name('submit')->where('cid',$id)->where('verify',1)->order('time asc')->field('id,uid,time')->select();
         if ($data) {
             $data = array_slice($data, 0, 20);
             foreach ($data as $key => $value) {
@@ -209,7 +209,7 @@ class Api extends Model
     public function getAllRank(){
         $data = Db::name('users')->where('state',1)->where('scores','neq','')->order('scores desc')->field('id,username,scores')->paginate(10)->toArray();
         foreach ($data['data'] as $key => $value) {
-            $data['data'][$key]['time'] = Db::name('solves')->where('uid',$value['id'])->order('time desc')->value('time');
+            $data['data'][$key]['time'] = Db::name('submit')->where('uid',$value['id'])->where('verify',1)->order('time desc')->value('time');
         }
         if ($data) {
             return returnJsonData(200,'success',$data);
