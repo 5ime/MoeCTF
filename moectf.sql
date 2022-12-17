@@ -19,7 +19,6 @@ DROP TABLE IF EXISTS `categorys`;
 CREATE TABLE `categorys` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL COMMENT '分类标题',
-  `time` varchar(255) NOT NULL COMMENT '添加时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -36,7 +35,7 @@ CREATE TABLE `challenges` (
   `flag` varchar(255) NOT NULL COMMENT '挑战答案',
   `download` text COMMENT '挑战附件地址',
   `money` varchar(255) NOT NULL COMMENT '挑战需要的金币',
-  `score` varchar(255) NOT NULL COMMENT '挑战分数',
+  `score` varchar(255) NOT NULL DEFAULT '0' COMMENT '挑战分数',
   `solve` varchar(255) NOT NULL DEFAULT '0' COMMENT '解题成功人数',
   `tags` text COMMENT '挑战标签',
   `category` varchar(255) NOT NULL COMMENT '挑战分类',
@@ -97,17 +96,19 @@ CREATE TABLE `setting` (
 INSERT INTO `setting` VALUES ('1', 'MoeCTF', 'A Simple, Free CTF Platform', 'MoeCTF,CTF,WEB,CRYPTO,REVERSE,PWN,MISC,网络安全,CTF训练平台,CTFer,Hacker,黑客,信息安全', '0', '0', '', 'smtp.domain.com', '', '', '10', '100');
 
 -- ----------------------------
--- Table structure for `solves`
+-- Table structure for `submit`
 -- ----------------------------
-DROP TABLE IF EXISTS `solves`;
-CREATE TABLE `solves` (
+DROP TABLE IF EXISTS `submit`;
+CREATE TABLE `submit` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `cid` varchar(255) NOT NULL COMMENT '挑战id',
-  `uid` varchar(255) NOT NULL COMMENT '用户id',
-  `score` varchar(255) NOT NULL COMMENT '挑战分数',
-  `time` varchar(255) NOT NULL COMMENT '解题时间',
+  `uid` int(11) NOT NULL COMMENT '用户ID',
+  `cid` int(11) NOT NULL COMMENT '题目ID',
+  `value` varchar(255) NOT NULL COMMENT '提交内容',
+  `verify` int(11) NOT NULL DEFAULT '0' COMMENT '是否正确',
+  `ip` varchar(255) NOT NULL COMMENT '用户提交IP',
+  `time` varchar(255) NOT NULL COMMENT '提交时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Table structure for `users`
@@ -117,7 +118,7 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL COMMENT '用户名',
   `avatar` text NOT NULL COMMENT '用户头像',
-  `scores` varchar(255) DEFAULT NULL COMMENT '用户分数',
+  `scores` varchar(255) DEFAULT '0' COMMENT '用户分数',
   `password` varchar(255) NOT NULL COMMENT '用户密码',
   `money` int(11) NOT NULL COMMENT '用户金币',
   `website` varchar(255) DEFAULT NULL COMMENT '用户网站',
@@ -125,12 +126,12 @@ CREATE TABLE `users` (
   `content` text COMMENT '用户签名',
   `type` varchar(255) NOT NULL DEFAULT '0' COMMENT '用户类型 0 普通用户 1 管理员',
   `sign_days` varchar(255) DEFAULT NULL COMMENT '连续签到天数',
-  `sign_time` varchar(255) DEFAULT NULL COMMENT '上次签到时间',
   `state` int(11) NOT NULL DEFAULT '1' COMMENT '用户显示还是隐藏',
   `verify` int(11) NOT NULL DEFAULT '0' COMMENT '用户邮箱是否验证',
   `token` varchar(255) NOT NULL DEFAULT '' COMMENT '验证token',
+  `sign_time` varchar(255) DEFAULT NULL COMMENT '上次签到时间',
+  `mai_ltime` varchar(255) DEFAULT NULL COMMENT '最后一次发件时间',
   `time` varchar(255) NOT NULL COMMENT '用户注册时间',
-  `mailtime` varchar(255) DEFAULT NULL COMMENT '最后一次发件时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
