@@ -218,7 +218,8 @@ body {
 	height: 50px;
 	float: left;
 	line-height: 50px;
-	cursor: pointer
+	cursor: pointer;
+	user-select: none;
 }
 
 .i-nav>.right>.item>.img>img {
