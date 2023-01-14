@@ -120,7 +120,7 @@ CREATE TABLE `users` (
   `avatar` text NOT NULL COMMENT '用户头像',
   `scores` varchar(255) DEFAULT '0' COMMENT '用户分数',
   `password` varchar(255) NOT NULL COMMENT '用户密码',
-  `money` int(11) NOT NULL COMMENT '用户金币',
+  `money` int(11) NOT NULL DEFAULT '0' COMMENT '用户金币',
   `website` varchar(255) DEFAULT NULL COMMENT '用户网站',
   `email` varchar(255) NOT NULL COMMENT '用户邮箱',
   `content` text COMMENT '用户签名',
@@ -130,7 +130,7 @@ CREATE TABLE `users` (
   `verify` int(11) NOT NULL DEFAULT '0' COMMENT '用户邮箱是否验证',
   `token` varchar(255) NOT NULL DEFAULT '' COMMENT '验证token',
   `sign_time` varchar(255) DEFAULT NULL COMMENT '上次签到时间',
-  `mai_ltime` varchar(255) DEFAULT NULL COMMENT '最后一次发件时间',
+  `mail_time` varchar(255) DEFAULT NULL COMMENT '最后一次发件时间',
   `time` varchar(255) NOT NULL COMMENT '用户注册时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
