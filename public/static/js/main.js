@@ -236,7 +236,7 @@ $('#editUser input[name="new_password"]').blur(function () {
     }
 });
 
-$('#update').click(function () {
+$('#userModal').on('click', '#update', function () {
     var username = $('#editUser input[name="username"]').val();
     var password = $('#editUser input[name="password"]').val();
     var new_password = $('#editUser input[name="new_password"]').val();

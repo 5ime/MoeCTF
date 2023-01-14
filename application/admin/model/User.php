@@ -2,6 +2,7 @@
 namespace app\admin\model;
 use think\Model;
 use think\Db;
+use think\facade\Session;
 
 class User extends Model
 {
@@ -13,7 +14,6 @@ class User extends Model
         } else {
             return returnJsonData(201,'error');
         }
-
     }
     
     public function getUserAllInfo()
@@ -51,39 +51,78 @@ class User extends Model
 
     public function editUser()
     {
-        $POST = input('post.');
-        if ($POST['id']) {
-            if(empty($POST['username'])){
-                unset($POST['username']);
-            }
-            if(empty($POST['password'])){
-                unset($POST['password']);
-            }
-            if (@$POST['password']) {
-                $POST['password'] = hashPwd($POST['password']);
-            }
-            $data = Db::name('users')->where('id',$POST['id'])->update($POST);
+        $id = input('post.id');
+        $arr = [
+            'username' => input('post.username'),
+            'email' => input('post.email'),
+            'website' => input('post.website'),
+            'content' => input('post.content'),
+        ];
+
+        if (!filter_var($arr['email'], FILTER_VALIDATE_EMAIL)) {
+            return returnJsonData(201,'Please enter the correct email address');
+        }
+
+        if (!empty($arr['post.password'])) {
+            $arr['password'] = hashPwd(input('post.password'));
+        }
+
+        if (!empty($arr['username'])) {
+            $data = Db::name('users')->where('username',$arr['username'])->find();
             if ($data) {
-                return returnJsonData(200,'success', $data);
-            } else {
-                return returnJsonData(201,'error');
+                return returnJsonData(201,'Username already exists');
             }
+        }
+        array_filter($arr);
+        if ($arr['email']) {
+            $arr['token'] = md5(rand(100000,999999) . time());
+            $arr['verify'] = 0;
+        }
+
+        $data = Db::name('users')->where('id', $id)->update($arr);
+        if ($data) {
+            if ($id == Session::get('userid') && $arr['password']) {
+                Session::clear();
+                cookie('islogin', 0);
+            }
+            return returnJsonData(200,'success');
         } else {
-            if(empty($POST['username'])){
-                unset($POST['username']);
+            return returnJsonData(201,'error');
+        }
+    }
+
+    public function addUser()
+    {
+        $arr = [
+            'avatar' => input('post.avatar'),
+            'username' => input('post.username'),
+            'email' => input('post.email'),
+            'password' => hashPwd(input('post.password')),
+            'website' => input('post.website'),
+            'content' => input('post.content'),
+            'time' => time(),
+        ];
+
+        if (!filter_var($arr['email'], FILTER_VALIDATE_EMAIL)) {
+            return returnJsonData(201,'Please enter the correct email address');
+        }
+
+        foreach ($arr as $key => $value) {
+            if (empty($value)) {
+                return returnJsonData(201,'Please fill in the complete information');
             }
-            if(empty($POST['password'])){
-                unset($POST['password']);
-            }
-            if (@$POST['password']) {
-                $POST['password'] = hashPwd($POST['password']);
-            }
-            $data = Db::name('users')->insert($POST);
-            if ($data) {
-                return returnJsonData(200,'success', $data);
-            } else {
-                return returnJsonData(201,'error');
-            }
+        }
+
+        $data = Db::name('users')->where('username',$arr['username'])->find();
+        if ($data) {
+            return returnJsonData(201,'Username already exists');
+        }
+
+        $data = Db::name('users')->insert($arr);
+        if ($data) {
+            return returnJsonData(200,'success');
+        } else {
+            return returnJsonData(201,'error');
         }
     }
 
@@ -102,7 +141,7 @@ class User extends Model
             }
             $data = Db::name('users')->where('id',$id)->update(['avatar' => '/' . $filePath .$info->getSaveName()]);
             $data = [
-                'url' => $filePath . $info->getSaveName(),
+                'url' => '/' . $filePath . $info->getSaveName(),
             ];
             return returnJsonData(200, 'success', $data);
         }else{

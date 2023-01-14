@@ -44,6 +44,11 @@ class User extends Base
         return $this->UserModel->editUser();
     }
 
+    public function addUser()
+    {
+        return $this->UserModel->addUser();
+    }
+
     public function uploadAvatar(){
         return $this->UserModel->uploadAvatar();
     }

@@ -25,9 +25,9 @@ class User extends Model
 
     public function login(){
         $POST = input('post.');
-        $username = @$POST['username'];
-        $password = @$POST['password'];
-        $checkcode = @$POST['checkcode'];
+        $username = $POST['username'];
+        $password = $POST['password'];
+        $checkcode = $POST['checkcode'];
 
         if (empty($username) || empty($password) || empty($checkcode)) {
             return returnJsonData(201,'信息不完整');
@@ -59,10 +59,14 @@ class User extends Model
 
     public function register(){
         $POST = input('post.');
-        $username = @$POST['username'];
-        $password = @$POST['password'];
-        $email = @$POST['email'];
-        $checkcode = @$POST['checkcode'];
+        $username = $POST['username'];
+        $password = $POST['password'];
+        $email = $POST['email'];
+        $checkcode = $POST['checkcode'];
+        if (!filter_var($arr['email'], FILTER_VALIDATE_EMAIL)) {
+            return returnJsonData(201,'Please enter the correct email address');
+        }
+
         if (empty($username) || empty($password) || empty($email) || empty($checkcode)) {
             return returnJsonData(201,'信息不完整');
         }
@@ -135,28 +139,47 @@ class User extends Model
             'website' => input('post.website'),
             'content' => input('post.content'),
         ];
+        if (!filter_var($arr['email'], FILTER_VALIDATE_EMAIL)) {
+            return returnJsonData(201,'Please enter the correct email address');
+        }
+
         $password = input('post.password');
         $new_password = input('post.new_password');
 
-        if (!empty(@$arr['username'])) {
+        if (!empty($arr['username'])) {
             $data = Db::name('users')->where('username',$arr['username'])->find();
             if ($data) {
                 return returnJsonData(201,'Username already exists');
             }
         }
 
-        if (!empty(@$password) && !empty(@$new_password)) {
-            $data = Db::name('users')->where('username',Session::get('username'))->where('password',hashPwd($password))->find();
-            if (!$data) {
-                return returnJsonData(201,'Password error');
+        $isadmin = Db::name('users')->where('id',Session::get('userid'))->value('type');
+
+        if ($isadmin == 1 && !empty($new_password)) {
+            $arr['password'] = hashPwd($password);
+        } else {
+            if (!empty($password) && !empty($new_password)) {
+                $data = Db::name('users')->where('username',Session::get('username'))->where('password',hashPwd($password))->find();
+                if (!$data) {
+                    return returnJsonData(201,'Password error');
+                }
+                if (input('password') == $new_password) {
+                    return returnJsonData(201,'New password cannot be the same as the old password');
+                }
+                $arr['password'] = hashPwd($new_password);
             }
-            if (input('password') == $new_password) {
-                return returnJsonData(201,'New password cannot be the same as the old password');
-            }
-            $arr['password'] = hashPwd($new_password);
+        }
+        array_filter($arr);
+        if ($arr['email']) {
+            $arr['token'] = md5(rand(100000,999999) . time());
+            $arr['verify'] = 0;
         }
 
-        $data = Db::name('users')->where('id',Session::get('userid'))->update(array_filter($arr));
+        $data = Db::name('users')->where('id',Session::get('userid'))->update($arr);
+        if ($arr['password']) {
+            Session::clear();
+            cookie('islogin', 0);
+        }
         return returnJsonData(200,'success');
    }
 

@@ -40,7 +40,7 @@
                     <div class="item">身份：<span>普通用户</span></div>
                     <div class="item" id="userhome"><a href="#">我的个人主页</a></div>
                     <div class="item" id="edit" data-toggle="modal" data-target="#userModal"><a href="#">编辑我的资料</a></div>
-                    <div class="item" id="logout"><a href="#">登出</a></div>
+                    <div class="item" id="logout"><a href="#">退出登录</a></div>
                 </div>
             </div>
         </div>
@@ -136,7 +136,7 @@ tbody td .badge:hover{opacity:.7;transition:all .3s}
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">修改信息</h5>
+                    <h5 class="modal-title"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -149,6 +149,7 @@ tbody td .badge:hover{opacity:.7;transition:all .3s}
                         </i>
                     </div>
                     <div class="name"></div>
+                    <span name="id" style="display:none;"></span>
                     <div class="form-group">
                         <input name="username" type="text" placeholder="请输入新用户名">
                         <i class="iconfont icon-user"></i>
@@ -158,14 +159,7 @@ tbody td .badge:hover{opacity:.7;transition:all .3s}
                         <i class="iconfont icon-post"></i>
                     </div>
                     <div class="form-group">
-                        <input name="password" type="password" placeholder="请输入旧密码">
-                        <i class="iconfont icon-lock"></i>
-                        <p class="tips" id="pass-tips">
-                            必须同时包含大写/小写字母和数字(不允许其他字符)
-                        </p>
-                    </div>
-                    <div class="form-group">
-                        <input name="new_password" type="password" placeholder="请输入新密码">
+                        <input name="password" type="password" placeholder="请输入新密码">
                         <i class="iconfont icon-lock"></i>
                         <p class="tips" id="mail—tips">您输入的邮箱地址不正确</p>
                     </div>

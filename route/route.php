@@ -61,6 +61,7 @@ Route::rule('admin/Submit','admin/index/Submit');
 
 /* USER */
 Route::rule('api/v1/editUser','admin/User/editUser');
+Route::rule('api/v1/addUser','admin/User/addUser');
 Route::rule('api/v1/getUserList','admin/User/getUserList');
 Route::rule('api/v1/getUserAllInfo','admin/User/getUserAllInfo');
 Route::rule('api/v1/deleteUser','admin/User/deleteUser');
