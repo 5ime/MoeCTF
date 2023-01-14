@@ -635,3 +635,19 @@ or::before{
 	text-align: center;
 	margin: 10px;
 }
+
+.table {
+    table-layout: fixed;
+}
+
+.table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
