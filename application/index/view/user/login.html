@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登录</title>
+    <title>登录 - {$title}</title>
+    <meta name="keywords" content={$keywords}>
+	<meta name="description" content="{$description}">
     <link rel="stylesheet" href="/public/static/css/icon.css">
-    <link rel="stylesheet" href="/public/static/css/login/css/style.css">
+    <link rel="stylesheet" href="/public/static/css/style.css">
     <script src="/public/static/js/jquery.min.js"></script>
     <link rel="stylesheet" href="/public/static/css/layer.css" id="layuicss-layer">
     <script src="/public/static/js/layer.js"></script>
 </head>
 <body>
-<div class="card">
+<div class="login-card">
     <h2>Login</h2>
     <div class="form-group">
         <p class="name">登录名</p>
@@ -34,9 +36,9 @@
     <hr class="or">
     <a class="register" href="register">注册账号</a>
 </div>
-<div class="copy">
-    <p>Powered By <a href="https://github.com/5ime/moectf" target="_blank">MoeCTF</a></p>
-</div>
+<div class="footer">
+    © 2022-<script>document.write(new Date().getFullYear());</script> All Rights Reserved <or> Powered by <a href="https://github.com/5ime/moectf" target="_blank">MoeCTF</a>
+</or></div>
 <script>
     $(document).keyup(function(event) {
         if (event.keyCode == 13) {

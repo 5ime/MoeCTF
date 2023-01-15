@@ -28,7 +28,6 @@ class User extends Base
         }
         $this->assign([
             'title' => $title,
-            'index' => $this->setting['title'],
             'keywords' => $this->setting['keywords'],
             'description' => $this->setting['desc'],
         ]);
@@ -42,6 +41,11 @@ class User extends Base
     public function login(){
         if(!request()->isPost())
         {
+            $this->assign([
+                'title' => $this->setting['title'],
+                'keywords' => $this->setting['keywords'],
+                'description' => $this->setting['desc'],
+            ]);
             return $this->fetch();
         }
         return $this->userModel->login(); 
@@ -56,6 +60,11 @@ class User extends Base
                 ]);
                 return $this->fetch('application/error.html');
             }
+            $this->assign([
+                'title' => $this->setting['title'],
+                'keywords' => $this->setting['keywords'],
+                'description' => $this->setting['desc'],
+            ]);
             return $this->fetch();
         }
         return $this->userModel->register(); 
