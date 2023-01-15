@@ -1,6 +1,9 @@
 {include file="header" title="$title" /}
     <div class="i-card-main">
-        <p><i class="iconfont icon-page"></i> DASHBOARD PAGE</p>
+        <div class="search">
+          <input type="text" placeholder="搜索题目">
+          <i class="iconfont icon-search"></i>
+        </div>
     </div>
     <div class="row" id="category">
         <div class="col">
@@ -228,6 +231,31 @@ $(".challenge-info .modal-header .modal-title").click(function () {
 });
 
 var page = getUrlParam("page") || 1;
+
+$(".search").on("click", ".icon-search", function () {
+  $(".loading").show();
+  $("#challenges").hide();
+  var search = $(".search input").val();
+  $.get("api/v1/getSearchInfo?keyword=" + search, function (res) {
+    if (res.code == 200) {
+      var html = getChallenges(res)
+      setTimeout(function () {
+        $("#challenges").html(html);
+        $("#challenges").show();
+        getPage(res);
+        $(".loading").hide();
+      }, 500);
+    } else {
+      layer.msg(res.msg);
+    }
+  });
+});
+
+$(".search input").keydown(function (e) {
+  if (e.keyCode == 13) {
+    $(".search .icon-search").click();
+  }
+});
 
 $(".nav-list").on("click", ".sort li, .state li", function () {
   $(".loading").show();

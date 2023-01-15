@@ -30,7 +30,8 @@ class Api extends Model
             }
         }
 
-        if(input('get.page') > $data['last_page'] || !is_numeric(input('get.page'))){
+        $pageNum = input('get.page')?input('get.page'):1;
+        if($pageNum > $data['last_page'] || !is_numeric($pageNum)){
             return returnJsonData(201,'error');
         }
         
@@ -69,7 +70,8 @@ class Api extends Model
             $data = Db::name('challenges')->where('state',1)->where('category',ucfirst($POST['sort']))->order('id asc')->field('id,title,money,solve,score,hint,download,tags,category')->paginate(10)->toArray();
         }
 
-        if(input('get.page') > $data['last_page'] || !is_numeric(input('get.page'))){
+        $pageNum = input('get.page')?input('get.page'):1;
+        if($pageNum > $data['last_page'] || !is_numeric($pageNum)){
             return returnJsonData(201,'error');
         }
         
@@ -224,5 +226,48 @@ class Api extends Model
         }else{
             return returnJsonData(201,'error');
         }
+    }
+
+    public function getSearchInfo(){
+
+        $keyword = input('keyword');
+        if (empty($keyword)) {
+            return returnJsonData(201,'Please enter the search content');
+        }
+        if(Session::get('userid')){
+            $solved = $this->getSolved(Session::get('userid'));
+        }else{
+            $solved = [];
+        }
+        $data = Db::name('challenges')->where('state',1)->where('title','like','%'.$keyword.'%')->field('id,title,money,solve,score,hint,download,tags,category')->paginate(12)->toArray();
+        $category = Db::name('categorys')->select();
+        foreach($data['data'] as $key => $value){
+            foreach($category as $k => $v){
+                if($value['category'] == $v['id']){
+                    $data['data'][$key]['category'] = $v['name'];
+                }
+            }
+        }
+
+        $pageNum = input('get.page')?input('get.page'):1;
+        if($pageNum > $data['last_page'] || !is_numeric($pageNum)){
+            return returnJsonData(201,'error');
+        }
+        
+        foreach($data['data'] as $key => $value){
+            if(in_array($value['id'],$solved)){
+                $data['data'][$key]['solved'] = 1;
+            }else{
+                $data['data'][$key]['solved'] = 0;
+            }
+        }
+        if($data){
+            return returnJsonData(200,'success',explodeTags($data));
+        }else{
+            return returnJsonData(201,'No results');
+        }
+
+
+
     }
 }

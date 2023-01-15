@@ -47,4 +47,8 @@ class Api extends Controller
     public function getAllNotify(){
         return $this->apiModel->getAllNotify();
     }
+
+    public function getSearchInfo(){
+        return $this->apiModel->getSearchInfo();
+    }
 }

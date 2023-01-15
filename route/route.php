@@ -33,6 +33,7 @@ Route::rule('api/v1/getHomeInfo/:id','user/getHomeInfo');
 Route::rule('api/v1/notify','push/notify');
 Route::rule('api/v1/getAllNotify','api/getAllNotify');
 Route::rule('api/v1/push','push/index');
+Route::rule('api/v1/getSearchInfo','api/getSearchInfo');
 
 /* POST LIST */
 Route::rule('api/v1/postFlag','post/postFlag');
