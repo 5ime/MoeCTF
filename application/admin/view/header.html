@@ -112,23 +112,29 @@
         </div>
     </div>
 <style>
-.main{padding:55px 10px 10px 215px;margin-bottom:0px}
-.i-sidebar{padding:0;position:fixed;left:0;top:0;width:196px;margin-top:50px;background:#fff;height:calc(100% - 40px);z-index:1;box-shadow:0 0 5px rgb(0 0 0 / 10%);overflow:hidden;overflow-y:auto;overflow-x:hidden;transition:.2s}
-.i-sidebar>.item{display:block;transition:background .2s;position:relative;height:48px;white-space: nowrap;overflow: hidden;}
-.i-sidebar>.item.title a{color:#212529;font-size:20px;padding:15px 20px;line-height:20px;display:block;margin:0}
-.i-sidebar>.item.title .icon .iconfont{width:24px;min-width:24px;height:24px;font-size:20px;color:rgba(0,0,0,.54);margin-right:10px}
-.i-sidebar::-webkit-scrollbar{width:5px}
-.i-sidebar::-webkit-scrollbar-thumb{border-radius:10px;background:rgba(0,0,0,.1)}
-tbody td .badge{cursor:pointer;transition:all .3s}
-tbody td .badge:hover{opacity:.7;transition:all .3s}
-.page-title .add {display: inline-block;position: absolute;right: 10px;cursor: pointer;transition: all 0.3s;}
-.page-title .add span:hover {color: #1890ff;transition: all 0.3s;}
-@media (max-width:1024px){#sidebar{display:inline}.i-sidebar{width:0;box-shadow:none;overflow-y:hidden}.main{padding:45px 10px 10px 10px;box-sizing:border-box;height:100%}}
-@media (min-width:280px) and (max-width:767px){.i-sidebar{width:0;box-shadow:none;overflow-y:hidden}.main{padding:45px 10px 10px 10px;box-sizing:border-box;height:100%}}
-@media (max-width:540px){.i-sidebar{width:0;box-shadow:none;overflow-y:hidden}.main{padding:45px 10px 10px 10px;box-sizing:border-box;height:100%}}
-@media (max-width:500px){.i-sidebar{width:0;box-shadow:none;overflow-y:hidden}.main{padding:45px 10px 10px 10px;box-sizing:border-box;height:100%}}
-@media (max-width:320px){.right{display:none}.form-group>input{width:85%}}
-@media (min-width:360px) and (max-width:415px){.form-group>input{width:89%}}
+.main{margin-bottom:0;padding:55px 10px 10px 215px;}
+.i-sidebar{position:fixed;top:50px;left:0;z-index:1;overflow-x:hidden;overflow-y:auto;padding:0;width:196px;height:calc(100% - 40px);background:#fff;box-shadow:0 0 5px rgb(0 0 0 / 10%);transition:all .2s;}
+.i-sidebar>.item{position:relative;display:block;overflow:hidden;height:48px;white-space:nowrap;transition:background .2s;}
+.i-sidebar>.item.title a{display:block;margin:0;padding:15px 20px;color:#212529;font-size:20px;line-height:20px;}
+.i-sidebar>.item.title .icon .iconfont{margin-right:10px;width:24px;height:24px;min-width:24px;color:rgba(0,0,0,.54);font-size:20px;}
+.i-sidebar::-webkit-scrollbar{width:5px;}
+.i-sidebar::-webkit-scrollbar-thumb{border-radius:10px;background:rgba(0,0,0,.1);}
+tbody td .badge{cursor:pointer;transition:all .3s;}
+tbody td .badge:hover{opacity:.7;transition:all .3s;}
+.page-title .add{position:absolute;right:10px;display:inline-block;cursor:pointer;transition:all .3s;}
+.page-title .add span:hover{color:#1890ff;transition:all .3s;}
+@media (max-width:1024px){#sidebar{display:inline;}
+.i-sidebar{overflow-y:hidden;width:0;box-shadow:none;}
+.main{box-sizing:border-box;padding:45px 10px 10px 10px;height:100%;}}
+@media (min-width:280px) and (max-width:767px){.i-sidebar{overflow-y:hidden;width:0;box-shadow:none;}
+.main{box-sizing:border-box;padding:45px 10px 10px 10px;height:100%;}}
+@media (max-width:540px){.i-sidebar{overflow-y:hidden;width:0;box-shadow:none;}
+.main{box-sizing:border-box;padding:45px 10px 10px 10px;height:100%;}}
+@media (max-width:500px){.i-sidebar{overflow-y:hidden;width:0;box-shadow:none;}
+.main{box-sizing:border-box;padding:45px 10px 10px 10px;height:100%;}}
+@media (max-width:320px){.right{display:none;}
+.form-group>input{width:85%;}}
+@media (min-width:360px) and (max-width:415px){.form-group>input{width:89%;}}
 </style>
 
 <div class="main">

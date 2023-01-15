@@ -126,6 +126,7 @@ class User extends Model
 
     public function logout(){
         Session::clear();
+        cookie('islogin', 0);
         return returnJsonData(200,'Logout success');
     }
 
