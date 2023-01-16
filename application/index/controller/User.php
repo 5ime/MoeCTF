@@ -20,14 +20,15 @@ class User extends Base
     }
     
     public function home(){
-        $info = json_decode($this -> getUserInfo()->getContent(),true);
-        if ($info['data']['state'] == 0) {
-            $title = $this->setting['title'];
-        }else {
-            $title = $info['data']['username'] . ' - ' . $this->setting['title'];
-        }
+        $title = $this->setting['title'];
+        $id = explode('/',request()->server()['REQUEST_URI'])[2];
+        $userInfo = json_decode($this->userModel->getHomeInfo($id)->getContent(),true);
+        if($userInfo['code'] == 200){
+            $title = $userInfo['data']['username'] . '的主页 - ' . $this->setting['title'];
+        }   
         $this->assign([
             'title' => $title,
+            'index' => $this->setting['title'],
             'keywords' => $this->setting['keywords'],
             'description' => $this->setting['desc'],
         ]);

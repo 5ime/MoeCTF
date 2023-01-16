@@ -9,7 +9,6 @@
 	<meta name="description" content="{$description}">
     <link rel="stylesheet" href="/public/static/css/icon.css">
     <link rel="stylesheet" href="/public/static/css/style.css">
-    <script src="/public/static/js/jquery.min.js"></script>
     <link rel="stylesheet" href="/public/static/css/layer.css" id="layuicss-layer">
 </head>
 <body>
@@ -41,7 +40,7 @@
     <div class="form-group">
         <p class="name">验证码</p>
         <div class="checkcode">
-            <img id="checkcode" src="{:captcha_src()}" onclick="this.src='{:captcha_src()}?'+new Date().getTime();" width="200" height="40">
+            <img id="checkcode" src="{:captcha_src()}" onclick="this.src='{:captcha_src()}?'+new Date().getTime();" width="200" height="40" alt="点击刷新"/>
             <input name="checkcode" type="text" placeholder="请输入验证码" required>
         </div>
     </div>
@@ -52,7 +51,7 @@
 <div class="footer">
     © 2022-<script>document.write(new Date().getFullYear());</script> All Rights Reserved <or> Powered by <a href="https://github.com/5ime/moectf" target="_blank">MoeCTF</a>
 </or></div>
-<script src="/public/static/css/login/js/main.js"></script>
+<script src="/public/static/js/jquery.min.js"></script>
 <script src="/public/static/js/layer.js"></script>
 <script>
     $(document).keyup(function(event) {
@@ -60,7 +59,6 @@
             $("#register").click();
         }
     });
-
 
     $("#password").blur(function () {
         var password = $("#password").val();
@@ -119,6 +117,34 @@
             }
         })
     })
+
+    function ifPassword(){
+        var one = document.getElementById("password").value;
+        let regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,31}$/;
+
+        if (!regex.test(one)) {
+            document.getElementById("pass-tips").style.display = "inline";
+        }else{
+            document.getElementById("pass-tips").style.display = "none";
+        }
+
+        var two = document.getElementById("topassword").value;
+        console.log(two);
+        if (one != two && two != '' ){
+            document.getElementById("topass-tips").style.display = "inline";
+        }else{
+            document.getElementById("topass-tips").style.display = "none";
+        }
+    }
+    
+    document.getElementById("email").onblur = function () {
+        let regex = /^[0-9a-zA-Z_.-]+[@][0-9a-zA-Z_.-]+([.][a-zA-Z]+){1,2}$/;
+        if (regex.test(this.value)) {
+            document.getElementById("mail—tips").style.display = "none";
+        } else {
+            document.getElementById("mail—tips").style.display = "inline";
+        }
+    };
 </script>
 </body>
 </html>

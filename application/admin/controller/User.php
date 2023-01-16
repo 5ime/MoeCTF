@@ -15,7 +15,7 @@ class User extends Base
 
     public function index()
     {   
-        $title = '后台首页';
+        $title = '用户管理';
         return $this->fetch('Index', ['title' => $title]);
     }
 

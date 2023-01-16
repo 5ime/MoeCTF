@@ -222,10 +222,10 @@ class User extends Model
 
     /* 获取用户主页信息 */
 
-    public function getHomeInfo(){
-        $id = input('id');
+    public function getHomeInfo($id = null){
+        $id = input('id')?input('id'):$id;
         if (!is_numeric($id)) {
-            return returnJsonData(201,'error');
+            return returnJsonData(201,'Please enter the correct user id');
         }
         if (Session::get('userid') == $id || Session::get('userid') == 1) {
             $userData = Db::name('users')->where('id',$id)->field('username,avatar,content,scores,money,website')->find();
@@ -233,7 +233,7 @@ class User extends Model
             $userData = Db::name('users')->where('id',$id)->where('state',1)->field('username,avatar,content,scores,money,website')->find();
         }
         if (!$userData) {
-            return returnJsonData(201,'error');
+            return returnJsonData(201,'User does not exist');
         }
         $getSolvs = Db::name('submit')->where('uid',$id)->where('verify',1)->paginate(10)->toArray();
         $solves = [];

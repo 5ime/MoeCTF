@@ -16,7 +16,7 @@ function openNav() {
 }
 
 $(".close, .bot-close").click(function(){
-    window.location.hash = '';
+    history.pushState("", "", window.location.pathname);
 });
 
 function getChallengeInfo(res){
@@ -31,9 +31,7 @@ function getChallengeInfo(res){
     }
     if (res.data.download) {
         if (res.data.download == "Not purchased") {
-            $("#buyModal #buyData").text(
-            "You need to buy this challenge to download the attachment"
-            );
+            $("#buyModal #buyData").text("You need to buy this challenge to download the attachment");
             $("#buyModal .btn-primary").text(res.data.money + " Purchase");
             $(".challenge-info .download").attr("data-toggle", "modal");
             $(".challenge-info .download").attr("data-target", "#buyModal");
@@ -51,7 +49,7 @@ function getChallengeInfo(res){
         $(".challenge-info .download").hide();
     }
     if (res.data.hint) {
-        $("#hintData").html(res.data.hint);
+        $("#hintModal #hintData").html(res.data.hint);
         $(".challenge-info .hint").show();
     } else {
         $(".challenge-info .hint").hide();
@@ -291,31 +289,3 @@ $(document).on('click', '#sendEmail', function () {
         });
     });
 });
-
-function ifPassword(){
-    var one = document.getElementById("password").value;
-    let regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,31}$/;
-
-    if (!regex.test(one)) {
-        document.getElementById("pass-tips").style.display = "inline";
-    }else{
-        document.getElementById("pass-tips").style.display = "none";
-    }
-
-    var two = document.getElementById("topassword").value;
-    console.log(two);
-    if (one != two && two != '' ){
-        document.getElementById("topass-tips").style.display = "inline";
-    }else{
-        document.getElementById("topass-tips").style.display = "none";
-    }
-}
- 
-document.getElementById("email").onblur = function () {
-    let regex = /^[0-9a-zA-Z_.-]+[@][0-9a-zA-Z_.-]+([.][a-zA-Z]+){1,2}$/;
-    if (regex.test(this.value)) {
-        document.getElementById("mail—tips").style.display = "none";
-    } else {
-        document.getElementById("mail—tips").style.display = "inline";
-    }
-};

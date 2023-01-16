@@ -34,8 +34,8 @@
         <div class="modal-dialog">
             <div class="modal-content challenge-info">
                 <div class="modal-header">
-                    <h6 class="modal-title active" id="challenge"><a>Challenge</a> </h6>
-                    <h6 class="modal-title" id="ranking"> <a>Resolved</a></h6> 
+                    <h6 class="modal-title active" id="challenge"><span>Challenge</span> </h6>
+                    <h6 class="modal-title" id="ranking"> <span>Resolved</span></h6> 
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -50,8 +50,8 @@
                     <div class="title"></div><hr>
                     <div class="content"></div>
                     <span class="but">
-                        <div class="download" style="display: none;"><a class="btn btn-secondary" href="" target="_blank">Download file</a></div>
-                        <div class="hint" style="display: none;"><a class="btn btn-info" data-toggle="modal" data-target="#hintModal">查看提示</a></div>
+                        <div class="download" style="display: none;"><a class="btn btn-secondary" href="" target="_blank">下载附件</a></div>
+                        <div class="hint" style="display: none;"><span class="btn btn-info" data-toggle="modal" data-target="#hintModal">查看提示</span></div>
                     </span>
                     <hr>
                     <div class="form-input">
@@ -129,19 +129,19 @@ $(document).ready(function () {
     if (res.code == 200) {
       var html = getChallenges(res)
       setTimeout(function () {
-    $("#category").show();
-    $("#challenges").html(html);
-    getPage(res);
-    $(".loading").hide();
-    }, 500);
-    } else {
-      layer.msg(res.msg);
-      $(".loading").hide();
-    }
+        $("#category").show();
+        $("#challenges").html(html);
+        getPage(res);
+        $(".loading").hide();
+      }, 500);
+      } else {
+        layer.msg(res.msg);
+        $(".loading").hide();
+      }
   });
   var hash = window.location.hash;
   if (hash) {
-    var hashArr = hash.split("solve-");
+    var hashArr = hash.split("-");
     $.get("/api/v1/getChallengeInfo/" + hashArr[1]).then((res) => {
       if (res.code == 200) {
         setTimeout(function () {
@@ -149,6 +149,7 @@ $(document).ready(function () {
         }, 500);
       } else {
         layer.msg(res.msg);
+        history.pushState("", "", window.location.pathname);
       }
       setTimeout(function () {
         $(".loading").hide();
@@ -159,10 +160,12 @@ $(document).ready(function () {
 
 $("#challenges").on("click", ".solve-list", function () {
   var id = $(this).children().first().text();
+  var title = $(this).children().first().next().text();
+  console.log(title);
   $.get("/api/v1/getChallengeInfo/" + id).then((res) => {
     if (res.code == 200) {
         getChallengeInfo(res)
-        window.location.hash = 'solve-'+id;
+        history.pushState("", "", window.location.pathname + '#'+title+'-'+id);
       } else {
         layer.msg(res.msg);
       }
@@ -233,9 +236,13 @@ $(".challenge-info .modal-header .modal-title").click(function () {
 var page = getUrlParam("page") || 1;
 
 $(".search").on("click", ".icon-search", function () {
+  var search = $(".search input").val();
+  if (search == "") {
+    layer.msg("Please enter the search content");
+    return;
+  }
   $(".loading").show();
   $("#challenges").hide();
-  var search = $(".search input").val();
   $.get("api/v1/getSearchInfo?keyword=" + search, function (res) {
     if (res.code == 200) {
       var html = getChallenges(res)
@@ -246,7 +253,11 @@ $(".search").on("click", ".icon-search", function () {
         $(".loading").hide();
       }, 500);
     } else {
-      layer.msg(res.msg);
+      setTimeout(function () {
+        $("#challenges").show();
+        layer.msg(res.msg);
+        $(".loading").hide();
+      }, 500);
     }
   });
 });

@@ -130,6 +130,10 @@ class Api extends Model
 
         $data = Db::name('challenges')->where('state',1)->where('id',$id)->field('id,title,money,solve,score,hint,tags,category,content')->find();
 
+        if (!$data) {
+            return returnJsonData(201,'Please check the challenge id');
+        }
+
         if(in_array($data['id'],$solved)){
             $data['solved'] = 1;
         }
@@ -251,7 +255,7 @@ class Api extends Model
 
         $pageNum = input('get.page')?input('get.page'):1;
         if($pageNum > $data['last_page'] || !is_numeric($pageNum)){
-            return returnJsonData(201,'error');
+            return returnJsonData(201,'No results');
         }
         
         foreach($data['data'] as $key => $value){
@@ -266,8 +270,5 @@ class Api extends Model
         }else{
             return returnJsonData(201,'No results');
         }
-
-
-
     }
 }
