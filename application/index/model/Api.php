@@ -20,7 +20,7 @@ class Api extends Model
         }else{
             $solved = [];
         }
-        $data = Db::name('challenges')->order('id asc')->where('state',1)->field('id,title,money,solve,score,hint,download,tags,category')->paginate(12)->toArray();
+        $data = Db::name('challenges')->order('id asc')->where('state',1)->field('id,title,money,solve,score,tags,category')->paginate(12)->toArray();
         $category = Db::name('categorys')->select();
         foreach($data['data'] as $key => $value){
             foreach($category as $k => $v){
@@ -32,7 +32,7 @@ class Api extends Model
 
         $pageNum = input('get.page')?input('get.page'):1;
         if($pageNum > $data['last_page'] || !is_numeric($pageNum)){
-            return returnJsonData(201,'error');
+            return returnJsonData(201,'No results');
         }
         
         foreach($data['data'] as $key => $value){
@@ -45,7 +45,7 @@ class Api extends Model
         if($data){
             return returnJsonData(200,'success',explodeTags($data));
         }else{
-            return returnJsonData(201,'error');
+            return returnJsonData(201,'No results');
         }
     }
 
@@ -61,18 +61,19 @@ class Api extends Model
 
     public function getSearchSort()
     {
+        // 有点问题，待修复
         $POST = input('post.');
         $solved = [];
 
         if ($POST['sort'] == 'all') {
-            $data = Db::name('challenges')->where('state',1)->order('id asc')->field('id,title,money,solve,score,hint,download,tags,category')->paginate(10)->toArray();
+            $data = Db::name('challenges')->where('state',1)->order('id asc')->field('id,title,money,solve,score,tags,category')->paginate(12)->toArray();
         }else {
-            $data = Db::name('challenges')->where('state',1)->where('category',ucfirst($POST['sort']))->order('id asc')->field('id,title,money,solve,score,hint,download,tags,category')->paginate(10)->toArray();
+            $data = Db::name('challenges')->where('state',1)->where('category',ucfirst($POST['sort']))->order('id asc')->field('id,title,money,solve,score,tags,category')->paginate(12)->toArray();
         }
 
         $pageNum = input('get.page')?input('get.page'):1;
         if($pageNum > $data['last_page'] || !is_numeric($pageNum)){
-            return returnJsonData(201,'error');
+            return returnJsonData(201,'No results');
         }
         
         if(Session::get('userid')){
@@ -107,7 +108,7 @@ class Api extends Model
         if($data && $data['data']){
             return returnJsonData(200,'success',explodeTags($data));
         }else{
-            return returnJsonData(201,'error');
+            return returnJsonData(201,'No results');
         }
     }
 

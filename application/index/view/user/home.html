@@ -23,7 +23,7 @@
             </thead>
             <tbody></tbody>
         </table>
-        <nav aria-label="Page navigation example" id="page" style="display: none;">
+        <nav id="page" style="display: none;">
             <ul class="pagination justify-content-center">
             </ul>
         </nav>
@@ -140,7 +140,7 @@ $(document).ready(function(){
                 getPage(res)
             }, 500);
         }else{
-            layer.msg(res.msg);
+            layer.msg(res.msg, {icon: 2});
             $(".loading").hide();
             setTimeout(function () {
                 window.location.href = '/';

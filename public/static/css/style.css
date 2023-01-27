@@ -54,6 +54,21 @@ body {
 	word-break: break-all;
 }
 
+#challenges>span {
+	display: flex;
+	/* 针对子元素的垂直方向对齐方式 */
+	align-items: center; 
+	/* 对子元素的水平方向对齐方式 */
+	justify-content: center;
+}
+
+.no-data {
+	margin: 80px 0;
+    font-size: 30px;
+    opacity: .7;
+	text-align: center;
+}
+
 .badge {
 	user-select: none;
 }

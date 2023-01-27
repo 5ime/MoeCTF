@@ -26,9 +26,8 @@
         </div>
     </div>
     <div class="row" id="challenges"></div>
-    <nav aria-label="Page navigation example" id="page" style="display: none;">
-        <ul class="pagination justify-content-center">
-        </ul>
+    <nav id="page" style="display: none;">
+        <ul class="pagination justify-content-center"></ul>
     </nav>
     <div class="modal fade" id="challengeModal" data-backdrop="static" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -131,10 +130,15 @@ $(document).ready(function () {
       setTimeout(function () {
         $("#category").show();
         $("#challenges").html(html);
-        getPage(res);
+        if (res.data.total > 11) {
+          getPage(res);
+        }else{
+          $("#page").hide();
+        }
         $(".loading").hide();
       }, 500);
       } else {
+        $("#page").hide();
         layer.msg(res.msg);
         $(".loading").hide();
       }
@@ -148,7 +152,7 @@ $(document).ready(function () {
             getChallengeInfo(res)
         }, 500);
       } else {
-        layer.msg(res.msg);
+        layer.msg(res.msg, {icon: 2});
         history.pushState("", "", window.location.pathname);
       }
       setTimeout(function () {
@@ -167,7 +171,7 @@ $("#challenges").on("click", ".solve-list", function () {
         getChallengeInfo(res)
         history.pushState("", "", window.location.pathname + '#'+title+'-'+id);
       } else {
-        layer.msg(res.msg);
+        layer.msg(res.msg, {icon: 2});
       }
       setTimeout(function () {
         $(".loading").hide();
@@ -238,24 +242,30 @@ var page = getUrlParam("page") || 1;
 $(".search").on("click", ".icon-search", function () {
   var search = $(".search input").val();
   if (search == "") {
-    layer.msg("Please enter the search content");
+    layer.msg("Please enter the search content", {icon: 2});
     return;
   }
   $(".loading").show();
   $("#challenges").hide();
+  $("#page").hide();
   $.get("api/v1/getSearchInfo?keyword=" + search, function (res) {
     if (res.code == 200) {
       var html = getChallenges(res)
       setTimeout(function () {
         $("#challenges").html(html);
         $("#challenges").show();
-        getPage(res);
+        if (res.data.total > 11) {
+          getPage(res);
+        }else{
+          $("#page").hide();
+        }
         $(".loading").hide();
       }, 500);
     } else {
       setTimeout(function () {
+        $("#page").hide();
         $("#challenges").show();
-        layer.msg(res.msg);
+        layer.msg(res.msg, {icon: 2});
         $(".loading").hide();
       }, 500);
     }
@@ -269,8 +279,11 @@ $(".search input").keydown(function (e) {
 });
 
 $(".nav-list").on("click", ".sort li, .state li", function () {
+  history.pushState("", "", window.location.pathname);
+  page = 1;
   $(".loading").show();
   $("#challenges").hide();
+  $("#page").hide();
   if (!$(this).hasClass("active")) {
     $(this).parent().children().removeClass("active");
     $(this).addClass("active");
@@ -282,16 +295,28 @@ $(".nav-list").on("click", ".sort li, .state li", function () {
     state: state
   }).then((res) => {
     if (res.code == 200) {
+      $("#challenges").removeClass("justify-content-center")
       var html = getChallenges(res)
       setTimeout(function () {
         $("#challenges").html(html);
         $("#challenges").show();
-        getPage(res);
+        console.log(res.data.total)
+        if (res.data.total > 11) {
+          getPage(res);
+        }else{
+          $("#page").hide();
+        }
         $(".loading").hide();
       }, 500);
     } else {
-      layer.msg(res.msg);
-      $(".loading").hide();
+      var html = '<span class="no-data">No Data...</span>'
+      $("#challenges").addClass("justify-content-center")
+      setTimeout(function () {
+        $("#page").hide();
+        $("#challenges").html(html);
+        $("#challenges").show();
+        $(".loading").hide();
+      }, 500);
     }
   });
 });
