@@ -45,7 +45,7 @@ $(document).ready(function(){
                 }
                 html += " <span class='badge badge-primary' id='" + data[i].id + "'>修改</span> <span class='badge badge-danger' id='" + data[i].id + "'>删除</span></td></td>";
             }
-            getPage(res)
+            pages(res)
             $("tbody").html(html);
             $(".loading").hide();
             $(".i-card-main").eq(1).show();

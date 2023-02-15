@@ -22,11 +22,6 @@ class Api extends Controller
         return $this->apiModel->getCategory();
     }
 
-    public function getSearchSort()
-    {
-        return $this->apiModel->getSearchSort();
-    }
-
     public function getChallengeInfo()
     {
         return $this->apiModel->getChallengeInfo();

@@ -15,38 +15,43 @@ class Api extends Model
 
     public function getChallenges()
     {
-        if(Session::get('userid')){
-            $solved = $this->getSolved(Session::get('userid'));
-        }else{
-            $solved = [];
+        $postData = input('post.');
+        
+        // 构建查询条件
+        $where = [];
+        if ($postData['sort'] != 'all') {
+            $where[] = ['category', '=', ucfirst($postData['sort'])];
         }
-        $data = Db::name('challenges')->order('id asc')->where('state',1)->field('id,title,money,solve,score,tags,category')->paginate(12)->toArray();
-        $category = Db::name('categorys')->select();
-        foreach($data['data'] as $key => $value){
-            foreach($category as $k => $v){
-                if($value['category'] == $v['id']){
-                    $data['data'][$key]['category'] = $v['name'];
-                }
+        if ($postData['state'] != 'all') {
+            $solved = $this->getSolved(Session::get('userid'));
+            if ($postData['state'] == 'resolved') {
+                $where[] = ['id', 'in', $solved];
+            } else {
+                $where[] = ['id', 'not in', $solved];
             }
         }
-
-        $pageNum = input('get.page')?input('get.page'):1;
-        if($pageNum > $data['last_page'] || !is_numeric($pageNum)){
-            return returnJsonData(201,'No results');
+    
+        // 查询数据并分页
+        $data = Db::name('challenges')->where($where)->where('state', 1)->order('id asc')->field('id,title,money,solve,score,tags,category')->paginate(12)->toArray();
+    
+        // 处理翻页冲突
+        $pageNum = input('page') ? input('page') : 1;
+        if ($pageNum > $data['last_page'] || !is_numeric($pageNum)) {
+            return returnJsonData(201, 'No results');
         }
-        
-        foreach($data['data'] as $key => $value){
-            if(in_array($value['id'],$solved)){
+        $data['current_page'] = (int)$pageNum;
+    
+        // 标记已解决的题目
+        $solved = $this->getSolved(Session::get('userid'));
+        foreach ($data['data'] as $key => $value) {
+            if (in_array($value['id'], $solved)) {
                 $data['data'][$key]['solved'] = 1;
-            }else{
+            } else {
                 $data['data'][$key]['solved'] = 0;
             }
         }
-        if($data){
-            return returnJsonData(200,'success',explodeTags($data));
-        }else{
-            return returnJsonData(201,'No results');
-        }
+    
+        return returnJsonData(200, 'success', explodeTags($data));
     }
 
     public function getCategory()
@@ -56,59 +61,6 @@ class Api extends Model
             return returnJsonData(200,'success',$data);
         }else{
             return returnJsonData(201,'error');
-        }
-    }
-
-    public function getSearchSort()
-    {
-        // 有点问题，待修复
-        $POST = input('post.');
-        $solved = [];
-
-        if ($POST['sort'] == 'all') {
-            $data = Db::name('challenges')->where('state',1)->order('id asc')->field('id,title,money,solve,score,tags,category')->paginate(12)->toArray();
-        }else {
-            $data = Db::name('challenges')->where('state',1)->where('category',ucfirst($POST['sort']))->order('id asc')->field('id,title,money,solve,score,tags,category')->paginate(12)->toArray();
-        }
-
-        $pageNum = input('get.page')?input('get.page'):1;
-        if($pageNum > $data['last_page'] || !is_numeric($pageNum)){
-            return returnJsonData(201,'No results');
-        }
-        
-        if(Session::get('userid')){
-            $solved = $this->getSolved(Session::get('userid'));
-        }
-
-        foreach($data['data'] as $key => $value){
-            if(in_array($value['id'],$solved)){
-                $data['data'][$key]['solved'] = 1;
-            }else{
-                $data['data'][$key]['solved'] = 0;
-            }
-        }
-
-        if($POST['state'] == 'resolved'){
-            foreach($data['data'] as $key => $value){
-                if($value['solved'] == 0){
-                    unset($data['data'][$key]);
-                }
-            }
-        }
-        
-        if($POST['state'] == 'unsolved'){
-            foreach($data['data'] as $key => $value){
-                if($value['solved'] == 1){
-                    unset($data['data'][$key]);
-                }
-            }
-        }
-        
-        $data['data'] = array_values($data['data']);
-        if($data && $data['data']){
-            return returnJsonData(200,'success',explodeTags($data));
-        }else{
-            return returnJsonData(201,'No results');
         }
     }
 

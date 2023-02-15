@@ -105,54 +105,41 @@
 </div>
 {include file="footer" /}
 <script>
+var page = getUrlParam("page") || 1;
 $(".loading").show();
-$("#category").hide();
 $(".close, .bot-close").click(function () {
   $("input[name='flag']").val("");
 });
 
 $(document).ready(function () {
+  // 获取分类
   $.get("/api/v1/getCategory", function (res) {
     if (res.code == 200) {
       let sort = res.data;
       let html = "";
       for (let i = 0; i < sort.length; i++) {
-        html +='<li><span id="' + sort[i].name + '">' + sort[i].name + "</span></li>";
+        html += '<li><span id="' + sort[i].name + '">' + sort[i].name + "</span></li>";
       }
       $(".sort").append(html);
     } else {
       layer.msg(res.msg);
     }
   });
-  $.get("/api/v1/getChallenges?page=" + page, function (res) {
-    if (res.code == 200) {
-      var html = getChallenges(res)
-      setTimeout(function () {
-        $("#category").show();
-        $("#challenges").html(html);
-        if (res.data.total > 11) {
-          getPage(res);
-        }else{
-          $("#page").hide();
-        }
-        $(".loading").hide();
-      }, 500);
-      } else {
-        $("#page").hide();
-        layer.msg(res.msg);
-        $(".loading").hide();
-      }
-  });
+
+  // 获取题目
+  getSearchSort();
+
+  // 判断 URL 是否有锚点
   var hash = window.location.hash;
   if (hash) {
     var hashArr = hash.split("-");
     $.get("/api/v1/getChallengeInfo/" + hashArr[1]).then((res) => {
       if (res.code == 200) {
         setTimeout(function () {
-            getChallengeInfo(res)
+          getChallengeInfo(res);
         }, 500);
       } else {
-        layer.msg(res.msg, {icon: 2});
+        layer.msg(res.msg, { icon: 2 });
         history.pushState("", "", window.location.pathname);
       }
       setTimeout(function () {
@@ -197,22 +184,24 @@ $("#postFlag").click(function () {
   });
 });
 
-$(".challenge-info .modal-header .modal-title").click(function () {
-  if (!$(this).hasClass("active")) {
+$(".challenge-info .modal-header .modal-title").on("click", function () {
+  var $this = $(this);
+  if (!$this.hasClass("active")) {
     $(".challenge-info .modal-header .modal-title").removeClass("active");
-    $(this).addClass("active");
+    $this.addClass("active");
   }
-  if ($(this).attr("id") == "ranking") {
+  var $form = $(".challenge-info .form");
+  if ($this.attr("id") == "ranking") {
     $(".ranking").show();
     $(".loading").show();
-    $(".challenge-info .form").hide();
-    var id = $(".challenge-info .form .id").text();
-    $.post("api/v1/getSolveRank", { id: id }).then((res) => {
+    $form.hide();
+    var id = $form.find(".id").text();
+    $.post("api/v1/getSolveRank", { id: id }).then(function (res) {
+      var html = "";
       if (res.code == 200) {
-        var html = "";
-        for (var i = 0; i < res.data.length; i++) {
-          html += "<tr><td>" + res.data[i].username + "</td><td>" + timestampToTime(res.data[i].time) + "</td></tr>";
-        }
+        $.each(res.data, function (i, item) {
+          html += "<tr><td>" + item.username + "</td><td>" + timestampToTime(item.time) + "</td></tr>";
+        });
       } else {
         html += "<tr><td>No Data</td></tr>";
       }
@@ -221,23 +210,21 @@ $(".challenge-info .modal-header .modal-title").click(function () {
         $(".loading").hide();
       }, 500);
     });
-    $(".close").click(function () {
+    $(".close").on("click", function () {
       setTimeout(function () {
         $(".challenge-info #ranking").removeClass("active");
         $(".challenge-info #challenge").addClass("active");
         $(".ranking").hide();
-        $(".challenge-info .form").show();
+        $form.show();
         $(".ranking tbody").html("");
       }, 500);
     });
   } else {
     $(".ranking").hide();
-    $(".challenge-info .form").show();
+    $form.show();
   }
   $(".loading").hide();
 });
-
-var page = getUrlParam("page") || 1;
 
 $(".search").on("click", ".icon-search", function () {
   var search = $(".search input").val();
@@ -290,7 +277,15 @@ $(".nav-list").on("click", ".sort li, .state li", function () {
   }
   var sort = $(".sort .active span").attr("id");
   var state = $(".state .active span").attr("id");
-  $.post("api/v1/getSearchSort?page=" + page, {
+  getSearchSort(sort, state, page);
+});
+
+function getSearchSort(sort='all', state='all', page=1){
+  $(".loading").show();
+  $("#challenges").hide();
+  $("#page").hide();
+  $.post("api/v1/getChallenges", {
+    page: page,
     sort: sort,
     state: state
   }).then((res) => {
@@ -298,9 +293,9 @@ $(".nav-list").on("click", ".sort li, .state li", function () {
       $("#challenges").removeClass("justify-content-center")
       var html = getChallenges(res)
       setTimeout(function () {
+        $(".loading").hide();
         $("#challenges").html(html);
         $("#challenges").show();
-        console.log(res.data.total)
         if (res.data.total > 11) {
           getPage(res);
         }else{
@@ -319,7 +314,7 @@ $(".nav-list").on("click", ".sort li, .state li", function () {
       }, 500);
     }
   });
-});
+}
 
 $("#buyModal .btn-primary").click(function () {
   var title = $(".challenge-info .title").text();

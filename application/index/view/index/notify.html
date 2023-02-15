@@ -32,7 +32,7 @@ $(document).ready(function(){
             setTimeout(function () {
                 $(".loading").hide();
                 $(".i-card-main").eq(1).show();
-                getPage(res)
+                pages(res)
             }, 500);
         }else{
             layer.msg(res.msg);

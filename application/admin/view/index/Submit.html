@@ -64,7 +64,7 @@ $(document).ready(function(){
                 }
                 html += "<td><span class='badge badge-info' value='"+ data[i].value +"' >查看</span>";
             }
-            getPage(res)
+            pages(res)
             $("tbody").html(html);
             $(".loading").hide();
             $(".i-card-main").eq(1).show();

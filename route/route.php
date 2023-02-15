@@ -22,7 +22,6 @@ Route::rule('downloadFile/:id','api/downloadFile');
 Route::rule('api/v1/getCategory','api/getCategory');
 Route::rule('api/v1/getChallenges','api/getChallenges');
 Route::rule('api/v1/getChallengeInfo/:id','api/getChallengeInfo');
-Route::rule('api/v1/getSearchSort','api/getSearchSort');
 Route::rule('api/v1/getAllRank','api/getAllRank');
 Route::rule('api/v1/getSolveRank','api/getSolveRank');
 Route::rule('api/v1/getUserStatus','user/getUserStatus');

@@ -74,7 +74,7 @@ $(document).ready(function(){
                 html += "<td style='width: 174px;'>" + timestampToTime(data[i].time) + "</td>";
                 html += "<td><span class='badge badge-info' id='" + data[i].id + "'>推送</span> <span class='badge badge-primary' data-toggle='modal' data-target='#notifymodal' id='" + data[i].id + "'>修改</span> <span class='badge badge-danger' id='" + data[i].id + "'>删除</span></td></tr>";
             }
-            getPage(res)
+            pages(res)
             $("tbody").html(html);
             $(".loading").hide();
             $(".i-card-main").eq(1).show();
