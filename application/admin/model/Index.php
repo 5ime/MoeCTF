@@ -33,18 +33,20 @@ class Index extends Model
     public function getSubmitList()
     {
         $id = input('get.id');
-        if ($id) {
-            $data = Db::name('submit')->where('id', $id)->order('id desc')->paginate(10)->toArray();
-        } else {
-            $data = Db::name('submit')->order('id desc')->paginate(10)->toArray();
+        $data = Db::name('submit')->order('id', 'desc')->when($id, function($query) use ($id) {return $query->where('id', $id);})->paginate(10)->toArray();
+
+        $userIds = array_column($data['data'], 'uid');
+        $challengeIds = array_column($data['data'], 'cid');
+
+        $usernames = Db::name('users')->where('id', 'in', $userIds)->column('username', 'id');
+        $challengeTitles = Db::name('challenges')->where('id', 'in', $challengeIds)->column('title', 'id');
+
+        foreach ($data['data'] as &$item) {
+            $item['uid'] = $usernames[$item['uid']] ?? '';
+            $item['cid'] = $challengeTitles[$item['cid']] ?? '';
         }
-        foreach ($data['data'] as $key => $value) {
-            $data['data'][$key]['uid'] = Db::name('users')->where('id', $value['uid'])->value('username');
-        }
-        foreach ($data['data'] as $key => $value) {
-            $data['data'][$key]['cid'] = Db::name('challenges')->where('id', $value['cid'])->value('title');
-        }
-        if ($data) {
+
+        if ($data['data']) {
             return returnJsonData(200,'success', $data);
         } else {
             return returnJsonData(201,'error');

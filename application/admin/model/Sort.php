@@ -23,18 +23,13 @@ class Sort extends Model
         $data = input('post.');
         if ($data['id']) {
             $res = Db::name('categorys')->where('id', $data['id'])->update(['name' => $data['name']]);
-            if ($res) {
-                return returnJsonData(200,'success');
-            } else {
-                return returnJsonData(201,'error');
-            }
         } else {
             $res = Db::name('categorys')->insert(['name' => $data['name']]);
-            if ($res) {
-                return returnJsonData(200,'success');
-            } else {
-                return returnJsonData(201,'error');
-            }
+        }
+        if ($res) {
+            return returnJsonData(200,'success');
+        } else {
+            return returnJsonData(201,'error');
         }
     }
 

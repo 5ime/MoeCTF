@@ -17,5 +17,4 @@ class Push extends Model
         $client_id = $_POST['client_id'];
         Gateway::joinGroup($client_id, 'All');
     }
-    
 }

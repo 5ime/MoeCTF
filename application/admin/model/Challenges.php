@@ -26,31 +26,36 @@ class Challenges extends Model
         }
     }
 
-    public function uploadFile(){
+    public function uploadFile()
+    {
         $id = input('post.id');
+        $file = request()->file('file');
         $filePath = 'uploads/file/';
+        
         if (!empty($id)) {
-            $data = Db::name('challenges')->where('id',$id)->value('download');
-            if($data) {
+            $data = Db::name('challenges')->where('id', $id)->value('download');
+            if ($data) {
                 $filename = $filePath . $data;
                 if (file_exists($filename)) {
                     unlink($filename);
                 }
             }
         }
-        $file = request()->file('file');
+        
         $info = $file->rule('sha1')->move($filePath);
-        $data = [
-            'name' => $info->getFilename(),
-            'url' => $filePath . $info->getSaveName(),
-        ];
-        if ($data) {
-            Db::name('challenges')->where('id',$id)->update(['download' => $data['url']]);
-            return returnJsonData(200,'success', $data);
+        
+        if ($info) {
+            $data = [
+                'name' => $info->getFilename(),
+                'url' => $filePath . $info->getSaveName(),
+            ];
+            Db::name('challenges')->where('id', $id)->update(['download' => $data['url']]);
+            return returnJsonData(200, 'success', $data);
         } else {
-            return returnJsonData(201,'error');
+            return returnJsonData(201, 'error');
         }   
     }
+
 
     public function editChallengeState()
     {

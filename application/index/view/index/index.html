@@ -268,7 +268,6 @@ $(".search input").keydown(function (e) {
 
 $(".nav-list").on("click", ".sort li, .state li", function () {
   history.pushState("", "", window.location.pathname);
-  page = 1;
   $(".loading").show();
   $("#challenges").hide();
   $("#page").hide();

@@ -4,8 +4,8 @@
 *{margin:0;padding:0}
 a{color:#00000073;text-decoration:none!important}
 a:hover{color:#03a9f4;transition:color .3s}
-body{background:#f0f2f55c;color:#545454;height: calc(100vh - var(--vh-offset, 50px));}
-.main{overflow-x:hidden;box-sizing:border-box;margin:auto auto -50px auto;padding:60px 45px 45px 45px;width:1400px;}
+body{height:calc(100vh - var(--vh-offset,50px));background:#f0f2f55c;color:#545454}
+.main{overflow-x:hidden;box-sizing:border-box;margin:auto auto -50px auto;padding:60px 45px 45px 45px;width:1400px}
 @media screen and (max-width:1400px){.main{width:100%}}
 .main p{margin:0;word-wrap:break-word;word-break:break-all}
 #challenges>span{display:flex;align-items:center;justify-content:center}
@@ -35,7 +35,7 @@ body{background:#f0f2f55c;color:#545454;height: calc(100vh - var(--vh-offset, 50
 .i-nav>.left>.item>.icon>.iconfont{font-size:24px}
 .i-nav>.right{float:right}
 .i-nav>.right>.item{float:left;padding:0 10px;height:50px;line-height:50px;cursor:pointer;user-select:none}
-.i-nav>.right>.item>.img>img{margin-top:10px;border-radius:50%}
+.i-nav>.right>.item>.img>img{/*margin-top:10px;*/border-radius:50%}
 .islogin,.nologin{display:none}
 .userhome{overflow:visible!important;margin-top:100px!important}
 .userhome .info{margin-top:-80px;text-align:center}
@@ -142,3 +142,6 @@ or::before{content:"/"}
 .login-card .form-group>.form-check>label:hover{color:#03a9f4;transition:color .3s}
 .login-card .tips{display:none;color:#e91e63;text-align:right;font-size:13px}
 @media (max-width:500px){.login-card{margin:15% 5% auto 5%;padding:30px}}
+#clockin{color:#00000073}
+li #clockin{color:#212529}
+#clockin .title:hover{color:#03a9f4}

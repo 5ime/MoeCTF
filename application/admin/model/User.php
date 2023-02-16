@@ -58,96 +58,52 @@ class User extends Model
             'website' => input('post.website'),
             'content' => input('post.content'),
         ];
-
+    
         if (!filter_var($arr['email'], FILTER_VALIDATE_EMAIL)) {
-            return returnJsonData(201,'Please enter the correct email address');
+            return returnJsonData(201, 'Please enter the correct email address');
         }
-
-        if (!empty($arr['post.password'])) {
+    
+        if (!empty(input('post.password'))) {
             $arr['password'] = hashPwd(input('post.password'));
         }
-
-        if (!empty($arr['username'])) {
-            $data = Db::name('users')->where('username',$arr['username'])->find();
-            if ($data) {
-                return returnJsonData(201,'Username already exists');
-            }
+    
+        if (!empty($arr['username']) && Db::name('users')->where('username', $arr['username'])->find()) {
+            return returnJsonData(201, 'Username already exists');
         }
-        array_filter($arr);
+    
         if ($arr['email']) {
-            $arr['token'] = md5(rand(100000,999999) . time());
+            $arr['token'] = md5(rand(100000, 999999) . time());
             $arr['verify'] = 0;
         }
-
-        $data = Db::name('users')->where('id', $id)->update($arr);
-        if ($data) {
-            if ($id == Session::get('userid') && $arr['password']) {
+    
+        if (Db::name('users')->where('id', $id)->update(array_filter($arr))) {
+            if ($id == Session::get('userid') && !empty($arr['password'])) {
                 Session::clear();
                 cookie('islogin', 0);
             }
-            return returnJsonData(200,'success');
-        } else {
-            return returnJsonData(201,'error');
+            return returnJsonData(200, 'success');
         }
+    
+        return returnJsonData(201, 'error');
     }
+    
 
-    public function addUser()
+    public function uploadAvatar()
     {
-        $arr = [
-            'avatar' => input('post.avatar'),
-            'username' => input('post.username'),
-            'email' => input('post.email'),
-            'password' => hashPwd(input('post.password')),
-            'website' => input('post.website'),
-            'content' => input('post.content'),
-            'time' => time(),
-        ];
-
-        if (!filter_var($arr['email'], FILTER_VALIDATE_EMAIL)) {
-            return returnJsonData(201,'Please enter the correct email address');
-        }
-
-        foreach ($arr as $key => $value) {
-            if (empty($value)) {
-                return returnJsonData(201,'Please fill in the complete information');
-            }
-        }
-
-        $data = Db::name('users')->where('username',$arr['username'])->find();
-        if ($data) {
-            return returnJsonData(201,'Username already exists');
-        }
-
-        $data = Db::name('users')->insert($arr);
-        if ($data) {
-            return returnJsonData(200,'success');
-        } else {
-            return returnJsonData(201,'error');
-        }
-    }
-
-    public function uploadAvatar(){
         $id = input('post.id');
         $file = request()->file('file');
         $filePath = 'uploads/avatar/';
         $info = $file->move($filePath);
-        if($info){
-            $avatar = Db::name('users')->where('id',$id)->value('avatar');
-            if($avatar) {
-                $filename = $filePath . $avatar;
-                if (file_exists($filename)) {
-                    unlink($filename);
-                }
-            }
-            $data = Db::name('users')->where('id',$id)->update(['avatar' => '/' . $filePath .$info->getSaveName()]);
-            $data = [
-                'url' => '/' . $filePath . $info->getSaveName(),
-            ];
-            return returnJsonData(200, 'success', $data);
-        }else{
-            return returnJsonData(201,'error');
+        if (!$info) {
+            return returnJsonData(201, 'error');
         }
-    }
+        $avatar = Db::name('users')->where('id', $id)->value('avatar');
+        if ($avatar && file_exists($filePath . $avatar)) {
+            unlink($filePath . $avatar);
+        }
+        Db::name('users')->where('id', $id)->update(['avatar' => '/' . $filePath . $info->getSaveName()]);
+        return returnJsonData(200, 'success', ['url' => '/' . $filePath . $info->getSaveName()]);
+    }    
 
     public function deleteUser()
     {   

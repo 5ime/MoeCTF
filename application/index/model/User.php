@@ -23,37 +23,38 @@ class User extends Model
 
     /* 登录 */
 
-    public function login(){
-        $POST = input('post.');
-        $username = $POST['username'];
-        $password = $POST['password'];
-        $checkcode = $POST['checkcode'];
-
+    public function login()
+    {
+        $postData = input('post.');
+        $username = $postData['username'] ?? '';
+        $password = $postData['password'] ?? '';
+        $checkcode = $postData['checkcode'] ?? '';
+    
         if (empty($username) || empty($password) || empty($checkcode)) {
-            return returnJsonData(201,'信息不完整');
+            return returnJsonData(201, 'Incomplete information');
         }
-
+    
         $captcha = new Captcha();
-        if(!$captcha->check($checkcode))
-        {
-            return returnJsonData(201,'Captcha error');
+        if (!$captcha->check($checkcode)) {
+            return returnJsonData(201, 'Captcha error');
         }
-
-        $data = Db::name('users')->where('username',$username)->where('password',hashPwd($password))->find();
-        if ($data) {
-            $isVerify = Db::name('setting')->value('verify');
-            if($isVerify){
-                if ($data['verify'] == 0) {
-                    return returnJsonData(201,'No Verify Email');
-                }
-            }
-            Session::set('userid', $data['id']);
-            Session::set('username', $data['username']);
-            return returnJsonData(200,'Login success');
-        }else{
-            return returnJsonData(201,'Login failed');
+    
+        $data = Db::name('users')->where(['username' => $username, 'password' => hashPwd($password)])->find();
+    
+        if (!$data) {
+            return returnJsonData(201, 'Login failed');
         }
+    
+        $isVerify = Db::name('setting')->value('verify');
+        if ($isVerify && !$data['verify']) {
+            return returnJsonData(201, 'No Verify Email');
+        }
+    
+        Session::set('userid', $data['id']);
+        Session::set('username', $data['username']);
+        return returnJsonData(200, 'Login success');
     }
+    
 
     /* 注册 */
 
@@ -63,64 +64,57 @@ class User extends Model
         $password = $POST['password'];
         $email = $POST['email'];
         $checkcode = $POST['checkcode'];
-        if (!filter_var($arr['email'], FILTER_VALIDATE_EMAIL)) {
-            return returnJsonData(201,'Please enter the correct email address');
-        }
-
+        
         if (empty($username) || empty($password) || empty($email) || empty($checkcode)) {
-            return returnJsonData(201,'信息不完整');
+            return returnJsonData(201, '信息不完整');
         }
+    
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return returnJsonData(201, 'Please enter the correct email address');
+        }
+    
         $captcha = new Captcha();
-        if(!$captcha->check($checkcode))
-        {
-            return returnJsonData(201,'Captcha error');
+        if (!$captcha->check($checkcode)) {
+            return returnJsonData(201, 'Captcha error');
         }
-        $data = Db::name('users')->where('username',$username)->find();
-        if ($data) {
-            return returnJsonData(201,'Username already exists');
+    
+        if (Db::name('users')->where('username', $username)->find()) {
+            return returnJsonData(201, 'Username already exists');
         }
-        $data = Db::name('users')->where('email',$email)->find();
-        if ($data) {
-            return returnJsonData(201,'Email already exists');
+        if (Db::name('users')->where('email', $email)->find()) {
+            return returnJsonData(201, 'Email already exists');
         }
+    
         $randToken = md5(rand(100000,999999) . time());
         $coin = Db::name('setting')->value('coin');
-        $data = [
-            'username' => $username,
-            'password' => hashPwd($password),
-            'email' => $email,
-            'token' => $randToken,
-            'money' => $coin,
-            'time' => time()
-        ];
-        $set = Db::name('setting')->filed('state,verify')->find();
-        if($set['verify']){
-            $sendEmail = sendEmail($data['email'], $data['username'], $randToken);
-            if(json_decode($sendEmail->getContent(),true)['code'] != 200){
-                return returnJsonData(201,'发信失败，请检查发信配置');
+    
+        $set = Db::name('setting')->field('state,verify')->find();
+        if ($set['verify']) {
+            $sendEmail = sendEmail($email, $username, $randToken);
+            if (json_decode($sendEmail->getContent(), true)['code'] != 200) {
+                return returnJsonData(201, '发信失败，请检查发信配置');
             }
-            $data['mail_time'] = time();
+            $mail_time = time();
+        } else {
+            $mail_time = 0;
         }
-        if($set['state']){
-            return returnJsonData(201,'平台关闭注册');
+    
+        if ($set['state']) {
+            return returnJsonData(201, '平台关闭注册');
         }
+    
+        $data = ['username' => $username, 'password' => hashPwd($password), 'email' => $email, 'token' => $randToken, 'money' => $coin, 'time' => time(), 'mail_time' => $mail_time, 'verify' => $set['verify'] ? 0 : 1];
         $res = Db::name('users')->insert($data);
         if ($res) {
-            $userid = Db::name('users')->where('username',$username)->value('id');
-            $data = [
-                'uid' => $userid,
-                'money' => $coin,
-                'type' => 4,
-                'first' => '0',
-                'last' => $coin,
-                'time' => time()
-            ];
+            $userid = Db::name('users')->where('username', $username)->value('id');
+            $data = ['uid' => $userid, 'money' => $coin, 'type' => 4, 'first' => '0', 'last' => $coin, 'time' => time()];
             Db::table('money')->insert($data);
-            return returnJsonData(200,'Register success');
-        }else{
-            return returnJsonData(201,'Register failed');
+            return returnJsonData(200, 'Register success');
+        } else {
+            return returnJsonData(201, 'Register failed');
         }
     }
+    
 
     /* 退出登录 */
 
@@ -198,83 +192,71 @@ class User extends Model
 
    /* 修改头像 */
 
-    public function uploadAvatar(){
-        $file = request()->file('file');
-        $filePath = 'uploads/avatar/';
-        $info = $file->validate(['ext'=>'jpg,png,gif'])->move($filePath);
-        if($info){
-            $avatar = Db::name('users')->where('username',Session::get('username'))->value('avatar');
-            if($avatar) {
-                $filename = $filePath . $avatar;
-                if (file_exists($filename)) {
-                    unlink($filename);
-                }
-            }
-            Db::name('users')->where('username',Session::get('username'))->update(['avatar' => '/' . $filePath . $info->getSaveName()]);
-            $data = [
-                'url' => '/' . $filePath . $info->getSaveName(),
-            ];
-            return returnJsonData(200, 'success', $data);
-        }else{
-            return returnJsonData(201,'error');
-        }
-    }
+   public function uploadAvatar()
+   {
+       $file = request()->file('file');
+       $filePath = 'uploads/avatar/';
+       $info = $file->validate(['ext' => 'jpg,png,gif', 'size' => 2048000])->move($filePath);
+   
+       if (!$info) {
+           return returnJsonData(201, 'error');
+       }
+   
+       $oldAvatar = Db::name('users')->where('username', Session::get('username'))->value('avatar');
+       if ($oldAvatar && file_exists($filePath . $oldAvatar)) {
+           unlink($filePath . $oldAvatar);
+       }
+   
+       Db::name('users')->where('username', Session::get('username'))
+           ->update(['avatar' => '/' . $filePath . $info->getSaveName()]);
+   
+       $data = ['url' => '/' . $filePath . $info->getSaveName()];
+       return returnJsonData(200, 'success', $data);
+   }   
 
     /* 获取用户主页信息 */
 
-    public function getHomeInfo($id = null){
-        $id = input('id')?input('id'):$id;
-        if (!is_numeric($id)) {
-            return returnJsonData(201,'Please enter the correct user id');
-        }
-        if (Session::get('userid') == $id || Session::get('userid') == 1) {
-            $userData = Db::name('users')->where('id',$id)->field('username,avatar,content,scores,money,website')->find();
-        }else{
-            $userData = Db::name('users')->where('id',$id)->where('state',1)->field('username,avatar,content,scores,money,website')->find();
-        }
-        if (!$userData) {
-            return returnJsonData(201,'User does not exist');
-        }
-        $getSolvs = Db::name('submit')->where('uid',$id)->where('verify',1)->paginate(10)->toArray();
-        $solves = [];
-        $category = [];
-        
-        foreach ($getSolvs['data'] as $key => $value) {
-            $getChallenge = Db::name('challenges')->where('id',$value['cid'])->field('title,category,score,id')->find();
-            $solves[$key]['id'] = $getChallenge['id'];
-            $solves[$key]['title'] = $getChallenge['title'];
-            $solves[$key]['category'] = $getChallenge['category'];
-            $solves[$key]['score'] = $getChallenge['score'];
-            $solves[$key]['time'] = $value['time'];
-        }
-        array_multisort(array_column($solves, 'time'), SORT_DESC, $solves);
-        
-        foreach ($solves as $key => $value) {
-            $category[$value['category']] = isset($category[$value['category']]) ? $category[$value['category']] + 1 : 1;
-        }
-        if ($category) {
-            $maxCategory = array_search(max($category), $category);
-        } else {
-            $maxCategory = 'Null';
-        }
-        $rank = Db::name('users')->order('scores desc')->select();
-        $rank = array_search($id, array_column($rank, 'id'));
+    public function getHomeInfo($id = null)
+    {
+        $id = input('id') ? input('id') : $id;
 
-        // 获取最近14天的提交记录
+        if (!is_numeric($id)) {
+            return returnJsonData(201, 'Please enter the correct user id');
+        }
+
+        $isSelf = Session::get('userid') == $id || Session::get('userid') == 1;
+
+        $userData = Db::name('users')->where('id', $id)->where($isSelf ? '' : 'state', 1)->field('username, avatar, content, scores, money, website')->find();
+
+        if (!$userData) {
+            return returnJsonData(201, 'User does not exist');
+        }
+
+        $solves = Db::name('submit')->where('uid', $id)->where('verify', 1)->join('challenges c', 'submit.cid = c.id')->field('c.id, c.title, c.category, c.score, submit.time')->order('submit.time desc')->select();
+
+        $category = array_count_values(array_column($solves, 'category'));
+
+        $maxCategory = $category ? array_search(max($category), $category) : 'Null';
+
+        $rank = Db::name('users')->where('scores', '>', 0)->order('scores desc')->field('id')->select();
+
+        $rank = array_search($id, array_column($rank, 'id')) + 1;
+
         $time = time() - 1209600;
+
         $solvelog = [];
         foreach ($solves as $key => $value) {
             if ($value['time'] > $time) {
-                $solvelog[$key]['time'] = date('m-d',$value['time']);
-                $solvelog[$key]['score'] = (int)$value['score'];
-                if (isset($solvelog[$key - 1]) && date('m-d',$value['time']) == date('m-d',$solves[$key - 1]['time'])) {
-                    $solvelog[$key]['score'] = $solvelog[$key - 1]['score'] + $value['score'];
-                    unset($solvelog[$key - 1]);
+                $day = date('m-d', $value['time']);
+
+                if (isset($solvelog[$key - 1]) && $day == $solvelog[$key - 1]['time']) {
+                    $solvelog[$key - 1]['score'] += $value['score'];
+                } else {
+                    $solvelog[] = ['time' => $day, 'score' => (int)$value['score']];
                 }
             }
         }
-        $solvelog = array_values($solvelog);
-        
+
         $data = [
             'username' => $userData['username'],
             'avatar' => $userData['avatar'],
@@ -282,33 +264,22 @@ class User extends Model
             'scores' => $userData['scores'],
             'money' => $userData['money'],
             'website' => $userData['website'],
-            'total' => $getSolvs['total'],
-            'per_page' => $getSolvs['per_page'],
-            'current_page' => $getSolvs['current_page'],
-            'last_page' => $getSolvs['last_page'],
+            'total' => count($solves),
             'category' => $maxCategory,
             'count' => count($solves),
             'data' => $solves,
             'solvelog' => $solvelog,
-            'rank' => $rank + 1,
+            'rank' => $rank,
         ];
 
-        if($id == Session::get('userid')){
-            $moneyData = Db::name('money')->where('uid',Session::get('userid'))->order('id desc')->limit(10)->select();
-            if ($moneyData) {
-                foreach ($moneyData as $key => $value) {
-                    if ($value['type'] == 0) {
-                        $moneyData[$key]['type'] = '购买附件';
-                    }elseif ($value['type'] == 1) {
-                        $moneyData[$key]['type'] = '解题奖励';
-                    }elseif ($value['type'] == 2) {
-                        $moneyData[$key]['type'] = '签到奖励';
-                    }else {
-                        $moneyData[$key]['type'] = '系统奖励';
-                    }
-                }
-                array_multisort(array_column($moneyData, 'time'), SORT_DESC, $moneyData);
+        if ($isSelf) {
+            $moneyData = Db::name('money')->where('uid',Session::get('userid'))
+                ->order('id desc')->limit(10)->select();
+            foreach ($moneyData as &$item) {
+                $item['type'] = ['购买附件', '解题奖励', '签到奖励', '系统奖励'][$item['type']];
             }
+            unset($item);
+            array_multisort(array_column($moneyData, 'time'), SORT_DESC, $moneyData);
             $data['moneys'] = $moneyData;
         }
         return returnJsonData(200,'success', $data);
@@ -318,19 +289,19 @@ class User extends Model
 
     function sendEmail(){
         $username = Session::get('username');
-        $data = Db::name('users')->where('username',$username)->field('email,token,verify,mail_time')->find();
+        $data = Db::name('users')->where('username', $username)->find();
         if (!$data || $data['verify']) {
-            return returnJsonData(201,'error');
+            return returnJsonData(201, 'error');
         }
-        $time = date('Y-m-d',$data['mail_time']);
+        $time = date('Y-m-d', $data['mail_time']);
         if ($time == date('Y-m-d')) {
-            return returnJsonData(201,'每个用户每天只能发送1封邮件');
+            return returnJsonData(201, '每个用户每天只能发送1封邮件');
         }
         $sendEmail = sendEmail($data['email'], $username, $data['token']);
-        if(json_decode($sendEmail->getContent(),true)['code'] != 200){
-            return returnJsonData(201,'发信失败，请检查发信配置');
+        if ($sendEmail->json('code') != 200) {
+            return returnJsonData(201, '发信失败，请检查发信配置');
         }
-        Db::name('users')->where('username',$username)->update(['mail_time' => time()]);
-        return returnJsonData(200,'success');
+        Db::name('users')->where('username', $username)->update(['mail_time' => time()]);
+        return returnJsonData(200, 'success');
     }
 }

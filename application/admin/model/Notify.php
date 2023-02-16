@@ -24,18 +24,13 @@ class Notify extends Model
         }
         if ($data['id']) {
             $res = Db::name('notify')->where('id', $data['id'])->update(['title' => $data['title'], 'content' => $data['content'], 'time' => $data['time']]);
-            if ($res) {
-                return returnJsonData(200,'success');
-            } else {
-                return returnJsonData(201,'error');
-            }
         } else {
             $res = Db::name('notify')->insert(['title' => $data['title'], 'content' => $data['content'], 'time' => $data['time']]);
-            if ($res) {
-                return returnJsonData(200,'success');
-            } else {
-                return returnJsonData(201,'error');
-            }
+        }
+        if ($res) {
+            return returnJsonData(200,'success');
+        } else {
+            return returnJsonData(201,'error');
         }
     }
 

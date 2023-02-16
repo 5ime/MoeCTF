@@ -209,7 +209,11 @@ getCookie('islogin') == 1 ? $.get('/api/v1/getUserStatus', function(res) {
 $('#logout').click(function () {
     $.get('/user/logout', function (res) {
         if (res.code == 200) {
-            document.cookie = "islogin=0";  
+            var keys = document.cookie.match(/[^ =;]+(?=\=)/g);
+            if (keys) {
+                for (var i = keys.length; i--;)
+                    document.cookie = keys[i] + '=0;expires=' + new Date(0).toUTCString()
+            }
             layer.msg(res.msg, {icon: 1});
             setTimeout(function () {
                 window.location.reload();
