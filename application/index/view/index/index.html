@@ -107,6 +107,7 @@
 <script>
 var page = getUrlParam("page") || 1;
 $(".loading").show();
+$("#category").hide();
 $(".close, .bot-close").click(function () {
   $("input[name='flag']").val("");
 });
@@ -294,6 +295,7 @@ function getSearchSort(sort='all', state='all', page=1){
       var html = getChallenges(res)
       setTimeout(function () {
         $(".loading").hide();
+        $("#category").show();
         $("#challenges").html(html);
         $("#challenges").show();
         if (res.data.total > 11) {

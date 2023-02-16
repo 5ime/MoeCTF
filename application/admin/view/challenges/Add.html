@@ -98,7 +98,8 @@
                 </div>
             </div>
         </div>
-    </div>  
+    </div>
+    {include file="footer" /}
 </div>
 <div class="modal fade" id="hintModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -116,7 +117,6 @@
         </div>
     </div>
 </div>
-{include file="footer" /}
 <script>
 $("#challenges #title").keyup(function(){
     $(".challenge-info .title").text($(this).val());

@@ -4,8 +4,8 @@
 *{margin:0;padding:0}
 a{color:#00000073;text-decoration:none!important}
 a:hover{color:#03a9f4;transition:color .3s}
-body{background:#f0f2f55c;color:#545454}
-.main{overflow-x:hidden;box-sizing:border-box;margin:auto auto -50px auto;padding:60px 45px 45px 45px;width:1400px;min-height:100%}
+body{background:#f0f2f55c;color:#545454;height: calc(100vh - var(--vh-offset, 50px));}
+.main{overflow-x:hidden;box-sizing:border-box;margin:auto auto -50px auto;padding:60px 45px 45px 45px;width:1400px;}
 @media screen and (max-width:1400px){.main{width:100%}}
 .main p{margin:0;word-wrap:break-word;word-break:break-all}
 #challenges>span{display:flex;align-items:center;justify-content:center}
