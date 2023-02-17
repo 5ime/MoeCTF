@@ -24,7 +24,7 @@ MoeCTF 正在开发中...
 ### 启动 Worker
 
 ```
-php think worker:server
+php think worker:gateway
 ```
 
 ## 访问 MoeCTF
