@@ -105,7 +105,6 @@
 </div>
 {include file="footer" /}
 <script>
-var page = getUrlParam("page") || 1;
 $(".loading").show();
 $("#category").hide();
 $(".close, .bot-close").click(function () {
@@ -133,7 +132,7 @@ $(document).ready(function () {
   // 判断 URL 是否有锚点
   var hash = window.location.hash;
   if (hash) {
-    var hashArr = hash.split("-");
+    const hashArr = hash.split("-");
     $.get("/api/v1/getChallengeInfo/" + hashArr[1]).then((res) => {
       if (res.code == 200) {
         setTimeout(function () {
@@ -151,9 +150,8 @@ $(document).ready(function () {
 });
 
 $("#challenges").on("click", ".solve-list", function () {
-  var id = $(this).children().first().text();
-  var title = $(this).children().first().next().text();
-  console.log(title);
+  const id = $(this).children().first().text();
+  const title = $(this).children().first().next().text();
   $.get("/api/v1/getChallengeInfo/" + id).then((res) => {
     if (res.code == 200) {
         getChallengeInfo(res)
@@ -168,9 +166,9 @@ $("#challenges").on("click", ".solve-list", function () {
 });
 
 $("#postFlag").click(function () {
-  var flag = $("input[name='flag']").val();
-  var title = $(".challenge-info .title").text();
-  var id = $(".challenge-info .id").text();
+  const flag = $("input[name='flag']").val();
+  const title = $(".challenge-info .title").text();
+  const id = $(".challenge-info .id").text();
   $.post("/api/v1/postFlag", {
     id: id,
     title: title,
@@ -191,14 +189,14 @@ $(".challenge-info .modal-header .modal-title").on("click", function () {
     $(".challenge-info .modal-header .modal-title").removeClass("active");
     $this.addClass("active");
   }
-  var $form = $(".challenge-info .form");
+  const $form = $(".challenge-info .form");
   if ($this.attr("id") == "ranking") {
     $(".ranking").show();
     $(".loading").show();
     $form.hide();
-    var id = $form.find(".id").text();
+    const id = $form.find(".id").text();
     $.post("api/v1/getSolveRank", { id: id }).then(function (res) {
-      var html = "";
+      let html = "";
       if (res.code == 200) {
         $.each(res.data, function (i, item) {
           html += "<tr><td>" + item.username + "</td><td>" + timestampToTime(item.time) + "</td></tr>";
@@ -228,7 +226,7 @@ $(".challenge-info .modal-header .modal-title").on("click", function () {
 });
 
 $(".search").on("click", ".icon-search", function () {
-  var search = $(".search input").val();
+  const search = $(".search input").val();
   if (search == "") {
     layer.msg("Please enter the search content", {icon: 2});
     return;
@@ -238,7 +236,7 @@ $(".search").on("click", ".icon-search", function () {
   $("#page").hide();
   $.get("api/v1/getSearchInfo?keyword=" + search, function (res) {
     if (res.code == 200) {
-      var html = getChallenges(res)
+      let html = getChallenges(res)
       setTimeout(function () {
         $("#challenges").html(html);
         $("#challenges").show();
@@ -275,8 +273,8 @@ $(".nav-list").on("click", ".sort li, .state li", function () {
     $(this).parent().children().removeClass("active");
     $(this).addClass("active");
   }
-  var sort = $(".sort .active span").attr("id");
-  var state = $(".state .active span").attr("id");
+  const sort = $(".sort .active span").attr("id");
+  const state = $(".state .active span").attr("id");
   getSearchSort(sort, state, page);
 });
 
@@ -291,7 +289,7 @@ function getSearchSort(sort='all', state='all', page=1){
   }).then((res) => {
     if (res.code == 200) {
       $("#challenges").removeClass("justify-content-center")
-      var html = getChallenges(res)
+      let html = getChallenges(res)
       setTimeout(function () {
         $(".loading").hide();
         $("#category").show();
@@ -305,7 +303,7 @@ function getSearchSort(sort='all', state='all', page=1){
         $(".loading").hide();
       }, 500);
     } else {
-      var html = '<span class="no-data">No Data...</span>'
+      let html = '<span class="no-data">No Data...</span>'
       $("#challenges").addClass("justify-content-center")
       setTimeout(function () {
         $("#page").hide();
@@ -318,8 +316,8 @@ function getSearchSort(sort='all', state='all', page=1){
 }
 
 $("#buyModal .btn-primary").click(function () {
-  var title = $(".challenge-info .title").text();
-  var id = $(".challenge-info .id").text();
+  const title = $(".challenge-info .title").text();
+  const id = $(".challenge-info .id").text();
   $.post("/api/v1/buyChallenge", {
     id: id,
     title: title
@@ -335,8 +333,8 @@ $("#buyModal .btn-primary").click(function () {
 
 ws = new WebSocket("ws://127.0.0.1:2348");
 ws.onmessage = function (e) {
-  var data = eval("(" + e.data + ")");
-  var type = data.type || "";
+  const data = eval("(" + e.data + ")");
+  const type = data.type || "";
   switch (type) {
     case "init":
       $.post(
@@ -351,7 +349,6 @@ ws.onmessage = function (e) {
       $("#notifyModal").modal("show");
       break;
     default:
-      console.log(data);
   }
 };
 </script>

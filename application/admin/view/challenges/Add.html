@@ -45,7 +45,7 @@
                     <div class="col-md-6 mb-3">
                     <label>挑战附件</label>
                         <div class="custom-file">
-                            <input type="file" onchange="postData()" id="uploadFile" class="custom-file-input" id="customFile">
+                            <input type="file" onchange="postFile()" id="uploadFile" class="custom-file-input" id="customFile">
                             <label class="custom-file-label" for="customFile">Choose file</label>
                             <span class="fileurl" style="display: none;"></span>
                         </div>
@@ -153,20 +153,20 @@ $("#challenges #state").change(function(){
 
 $(".loading").show();
 $(".i-card-main").eq(1).hide();
-var page = getUrlParam("page") || 1;
 
 $(document).ready(function(){
     $.get("/api/v1/getCategory",function(res){
-        if(res.code == 200 ){
-          var data = res.data;
-          html = '';
-            for(var i = 0; i < data.length; i++){
-              html += '<option>'+data[i].name+'</option>';
-            }
-            $(".custom-select").eq(0).append(html);
-        }else{
-            layer.msg(data.msg);
+        if(res.code != 200 ){
+            layer.msg(res.msg);
+            return;
         }
+
+        const data = res.data;
+        let html = '';
+        for(let i = 0; i < data.length; i++){
+            html += '<option>'+data[i].name+'</option>';
+        }
+        $(".custom-select").eq(0).append(html);
         setTimeout(function () {
             $(".loading").hide();
             $(".i-card-main").eq(1).show();
@@ -175,18 +175,22 @@ $(document).ready(function(){
 });
 
 $("form").on("click",".btn-primary",function(){
-    var title = $("#challenges #title").val();
-    var category = $("#challenges #category").val();
-    var score = $("#challenges #score").val();
-    var money = $("#challenges #money").val();
-    var content = $("#challenges #content").val();
-    var hint = $("#challenges #hint").val();
-    var tags = $("#challenges #tags").val();
-    var flag = $("#challenges #flag").val();
-    var state = $("#challenges #state").val();
-    var fileurl = $("#challenges .fileurl").text();
-    state = state == "Hidden" ? 0 : 1;
-    var data = {
+    const title = $("#challenges #title").val();
+    const category = $("#challenges #category").val();
+    const score = $("#challenges #score").val();
+    const money = $("#challenges #money").val();
+    const content = $("#challenges #content").val();
+    const hint = $("#challenges #hint").val();
+    const tags = $("#challenges #tags").val();
+    const flag = $("#challenges #flag").val();
+    let state = $("#challenges #state").val();
+    const fileurl = $("#challenges .fileurl").text();
+    state = state = "Hidden" ? 0 : 1;
+    if(!title || !score || !flag){
+        layer.msg("标题、分数、flag不能为空");
+        return;
+    }
+    const data = {
         title:title,
         category:category,
         score:score,
@@ -199,20 +203,20 @@ $("form").on("click",".btn-primary",function(){
         download:fileurl
     }
     $.post("/api/v1/addChallenge",data,function(res){
-        if(res.code == 200 ){
+        if(res.code != 200 ){
             layer.msg(res.msg);
-            setTimeout(function(){
-                window.location.href = "/admin/challenges?page="+page;
-            },1000);
-        }else{
-            layer.msg(res.msg);
+            return;
         }
+        layer.msg(res.msg);
+        setTimeout(function(){
+            window.location.href = "/admin/challenges?page="+page;
+        },1000);
     });
     return false;
 });
 
-function postData() {
-    var formData = new FormData();
+function postFile() {
+    const formData = new FormData();
     formData.append("file", $("#uploadFile")[0].files[0]);
     $.ajax({
         url: '/api/v1/uploadFile',
@@ -222,7 +226,7 @@ function postData() {
         contentType: false, 
         dataType: 'text',
         success: function (res) {         
-            var data = JSON.parse(res);
+            const data = JSON.parse(res);
             if (data.code == 200) {
                 layer.msg(data.msg, {icon: 1});
                 $('.custom-file label').text(data.data.name);

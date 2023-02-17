@@ -19,21 +19,13 @@ var url = window.location.href.split('/');
 
 $(document).ready(function(){
     $.get("/api/v1/verifyEmail/" + url[url.length-1], function(res){
-        if(res.code == 200 ){
-            var html = "<center><h1>恭喜你激活成功<h1></center>";
-            $(".content").html(html);
-            setTimeout(function () {
-                $(".loading").hide();
-                $(".i-card-main").eq(1).show();
-            }, 500);
-        }else{
-            var html = "<center><h1>激活失败,"+ res.msg +"<h1></center>";
-            $(".content").html(html);
-            setTimeout(function () {
-                $(".loading").hide();
-                $(".i-card-main").eq(1).show();
-            }, 500);
-        }
+        let html = ''
+        res.code == 200 ? html += "<center><h1>恭喜你激活成功<h1></center>" : html += "<center><h1>激活失败,"+ res.msg +"<h1></center>";
+        $(".content").html(html);
+        setTimeout(function () {
+            $(".loading").hide();
+            $(".i-card-main").eq(1).show();
+        }, 500);
     });
 });
 </script>

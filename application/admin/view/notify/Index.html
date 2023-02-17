@@ -56,7 +56,7 @@
 <script>
 $(".loading").show();
 $(".i-card-main").eq(1).hide();
-var page = getUrlParam("page") || 1;
+
 $('.add').click(function(){
     $('#userModal .modal-title').text('添加公告')
 })
@@ -64,57 +64,65 @@ $('#userModal .modal-title').text('修改公告')
 
 $(document).ready(function(){
     $.get("/api/v1/getnotifyList?page=" + page,function(res){
-        if(res.code == 200 ){
-            var data = res.data.data;
-            var html = "";
-            for(var i = 0; i < data.length; i++){
-                html += "<tr><th scope='row'>" + data[i].id + "</th>";
-                html += "<td>" + data[i].title + "</td>";
-                html += "<td  style='display: none;'>" + data[i].content + "</td>";
-                html += "<td style='width: 174px;'>" + timestampToTime(data[i].time) + "</td>";
-                html += "<td><span class='badge badge-info' id='" + data[i].id + "'>推送</span> <span class='badge badge-primary' data-toggle='modal' data-target='#notifymodal' id='" + data[i].id + "'>修改</span> <span class='badge badge-danger' id='" + data[i].id + "'>删除</span></td></tr>";
-            }
-            pages(res)
-            $("tbody").html(html);
-            $(".loading").hide();
-            $(".i-card-main").eq(1).show();
-        }else{
-            layer.msg(data.msg);
+        if (res.code !== 200) {
+            layer.msg(res.data.msg);
+            return;
         }
+
+        const data = res.data.data;
+        let html = "";
+        for (let i = 0; i < data.length; i++) {
+            const { id, title, content, time } = data[i];
+            html += `<tr>
+                    <th scope="row">${id}</th>
+                    <td>${title}</td>
+                    <td style="display: none;">${content}</td>
+                    <td style="width: 174px;">${timestampToTime(time)}</td>
+                    <td>
+                        <span class="badge badge-info" id="${id}">推送</span>
+                        <span class="badge badge-primary" data-toggle="modal" data-target="#notifymodal" id="${id}">修改</span>
+                        <span class="badge badge-danger" id="${id}">删除</span>
+                    </td>
+                    </tr>`;
+        }
+        pages(res)
+        $("tbody").html(html);
+        $(".loading").hide();
+        $(".i-card-main").eq(1).show();
 
     });
 });
 
-$("tbody").on("click","span",function(){
-    var id = $(this).attr("id");
-    var name = $(this).parent().parent().children().eq(1).text();
-    var content = $(this).parent().parent().children().eq(2).text();
-    if($(this).hasClass("badge-primary")){
-        $('#notifymodal .modal-body input[name="notifyname"]').val(name);
-        $('#notifymodal .modal-body input[name="notifyid"]').val(id);
+$("tbody").on("click", "span", function() {
+    const id = $(this).attr("id");
+    const name = $(this).parent().siblings(":nth-child(2)").text();
+    const content = $(this).parent().siblings(":nth-child(3)").text();
+    if ($(this).hasClass("badge-primary")) {
+        $("#notifymodal .modal-body input[name='notifyname']").val(name);
+        $("#notifymodal .modal-body input[name='notifyid']").val(id);
         $('#notifymodal .modal-body #content').val(content);
-    }else if($(this).hasClass("badge-info")){
-        layer.alert('确定要推送给所有在线用户吗！？', {
-		icon: 0,
-		btn: ['确定', '取消'],
+    } else if ($(this).hasClass("badge-info")) {
+        layer.alert("确定要推送给所有在线用户吗？", {
+        icon: 0,
+        btn: ["确定", "取消"],
         yes: function(index) {
             layer.close(index);
-            $.post("/api/v1/push",{"title":name, "msg":content},function(res){
-                if(res.code == 200 ){
-                    layer.msg("推送成功");
-                }else{
-                    layer.msg(res.msg);
-                }
+            $.post("/api/v1/push", { "title": name, "msg": content }, function(res) {
+            if (res.code === 200) {
+                layer.msg("推送成功");
+            } else {
+                layer.msg(res.msg);
+            }
             });
-        }
+        },
         });
-    }else{
-        layer.alert('确定要删除此公告吗！？', {
-		icon: 5,
-		btn: ['确定', '取消'],
-		yes: function(index) {
-			layer.close(index);
-            $.post("/api/v1/deleteNotify",{"id":id},function(res){
+    } else {
+        layer.alert("确定要删除此公告吗？", {
+        icon: 5,
+        btn: ["确定", "取消"],
+        yes: function(index) {
+            layer.close(index);
+            $.post("/api/v1/deleteNotify", { "id": id }, function(res) {
                 if(res.code == 200){
                     layer.msg(res.msg);
                     setTimeout(function(){
@@ -129,9 +137,9 @@ $("tbody").on("click","span",function(){
 });
 
 $('#notifyBut #update').click(function(){
-    var name = $('#notifymodal .modal-body input[name="notifyname"]').val();
-    var id = $('#notifymodal .modal-body input[name="notifyid"]').val();
-    var content = $('#notifymodal .modal-body textarea').val();
+    const name = $('#notifymodal .modal-body input[name="notifyname"]').val();
+    const id = $('#notifymodal .modal-body input[name="notifyid"]').val();
+    const content = $('#notifymodal .modal-body textarea').val();
     $.post("/api/v1/editNotify",{"id":id,"title":name,"content":content},function(res){
         if(res.code == 200){
             layer.msg(res.msg);
@@ -143,6 +151,5 @@ $('#notifyBut #update').click(function(){
         }
     });
 });
-
 </script>
  </body></html>

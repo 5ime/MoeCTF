@@ -51,101 +51,97 @@ var urlArr = window.location.href.split('/');
 var last = urlArr[urlArr.length - 1];
 $(document).ready(function(){
     $.get('/api/v1/getHomeInfo/' + last, function (res) {
-        if (res.code == 200) {
-            var html = "";
-            $('.name').text(res.data.username);
-            $('.content').text(res.data.content);
-            if (res.data.avatar) {
-                $('.avatar img').attr('src', res.data.avatar);
-            }
-            for(var i = 0; i < res.data.count; i++){
-                html += "<tr><th scope='row'>" + (i+1) + "</th><td><a href='/#solve-" + res.data.data[i].id + "' target='_blank'>" + res.data.data[i].title + "</a></td><td>" + res.data.data[i].category + "</td><td>" + res.data.data[i].score + "</td><td>" + timestampToTime(res.data.data[i].time) + "</td></tr>";
-            }
-            badgelist = '<span class="badge badge-light">排名：' + res.data.rank + '</span> <span class="badge badge-light">擅长：' + res.data.category + '</span> <span class="badge badge-light">总分：' + res.data.scores + '</span> <span class="badge badge-light">金币：' + res.data.money + '</span> ';
-            $('.badgelist').html(badgelist);
-            if (res.data.website) {
-                $('.badgelist').append('<span class="badge badge-light"><a href="' + res.data.website + '" target="_blank"><i class="iconfont icon-url"></i></a></span>');
-            }
-            
-            $("#rankings tbody").html(html);
-            if (res.data.moneys) {
-                var moneyHtml = "";
-                for(var i = 0; i < res.data.moneys.length; i++){
-                    if (res.data.moneys[i].type.indexOf('奖励') != -1) {
-                        var total = '增加' + res.data.moneys[i].money + '枚'
-                    } else {
-                        var total = '减少' + res.data.moneys[i].money + '枚'
-                    }
-                    moneyHtml += "<tr><th scope='row'>" + (i+1) + "</th><td>" + total + "</td><td>" + res.data.moneys[i].last + "</td><td>" + res.data.moneys[i].type + "</td><td>" + timestampToTime(res.data.moneys[i].time) + "</td></tr>";
-                }
-                $("#money tbody").html(moneyHtml);
-                $("#money").show();
-                $(".i-card-title").eq(1).show();
-            }
-
-            var ctx = document.getElementById("solvelog");
-            ctx.height = 50;
-            let labels = [];
-            let data = [];
-
-            for (let i = 13; i >= 0; i--) {
-                let d = new Date();
-                d.setDate(d.getDate() - i);
-                labels.push(d.getMonth() + 1 + "-" + d.getDate());
-            }
-
-            if (res.data.solvelog.length == 0) {
-               data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-            }else{
-                for (let i = 0; i < res.data.solvelog.length; i++) {
-                    for (let j = 0; j < labels.length; j++) {
-                        let index = labels.indexOf(res.data.solvelog[i].time);
-                        if (index != -1) {
-                            data[index] = res.data.solvelog[i].score;
-                        }
-                        if (data[j] == undefined) {
-                            data[j] = 0;
-                        }
-                    }
-                }
-            }
-
-            setTimeout(function () {
-                $(".loading").hide();
-                $(".i-card-main").show();
-                new Chart(ctx, {
-                    type: "line",
-                    data: {
-                        labels: labels,
-                        datasets: [{                        
-                            data: data,
-                            label: "分数",
-                            borderColor: "#28c76f",
-                            backgroundColor: "rgba(40, 199, 111, 0.3)",
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            legend: {
-                                display: false
-                            },                            
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-                pages(res)
-            }, 500);
-        }else{
+        if (res.code != 200) {
             layer.msg(res.msg, {icon: 2});
             $(".loading").hide();
             setTimeout(function () {
                 window.location.href = '/';
             }, 1000);
         }
+        let html = "";
+        $('.name').text(res.data.username);
+        $('.content').text(res.data.content);
+        if (res.data.avatar) {
+            $('.avatar img').attr('src', res.data.avatar);
+        }
+        for(let i = 0; i < res.data.count; i++){
+            html += "<tr><th scope='row'>" + (i+1) + "</th><td><a href='/#solve-" + res.data.data[i].id + "' target='_blank'>" + res.data.data[i].title + "</a></td><td>" + res.data.data[i].category + "</td><td>" + res.data.data[i].score + "</td><td>" + timestampToTime(res.data.data[i].time) + "</td></tr>";
+        }
+        badgelist = '<span class="badge badge-light">排名：' + res.data.rank + '</span> <span class="badge badge-light">擅长：' + res.data.category + '</span> <span class="badge badge-light">总分：' + res.data.scores + '</span> <span class="badge badge-light">金币：' + res.data.money + '</span> ';
+        $('.badgelist').html(badgelist);
+        if (res.data.website) {
+            $('.badgelist').append('<span class="badge badge-light"><a href="' + res.data.website + '" target="_blank"><i class="iconfont icon-url"></i></a></span>');
+        }
+        
+        $("#rankings tbody").html(html);
+        if (res.data.moneys) {
+            var moneyHtml = "";
+            var total = "";
+            for(let i = 0; i < res.data.moneys.length; i++){
+                res.data.moneys[i].type.indexOf('奖励') != -1 ? total = '增加' + res.data.moneys[i].money + '枚' : total = '减少' + res.data.moneys[i].money + '枚';
+                moneyHtml += "<tr><th scope='row'>" + (i+1) + "</th><td>" + total + "</td><td>" + res.data.moneys[i].last + "</td><td>" + res.data.moneys[i].type + "</td><td>" + timestampToTime(res.data.moneys[i].time) + "</td></tr>";
+            }
+            $("#money tbody").html(moneyHtml);
+            $("#money").show();
+            $(".i-card-title").eq(1).show();
+        }
+
+        const ctx = document.getElementById("solvelog");
+        ctx.height = 50;
+        let labels = [];
+        let data = [];
+
+        for (let i = 13; i >= 0; i--) {
+            let d = new Date();
+            d.setDate(d.getDate() - i);
+            labels.push(d.getMonth() + 1 + "-" + d.getDate());
+        }
+
+        if (res.data.solvelog.length == 0) {
+            data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        }else{
+            for (let i = 0; i < res.data.solvelog.length; i++) {
+                for (let j = 0; j < labels.length; j++) {
+                    let index = labels.indexOf(res.data.solvelog[i].time);
+                    if (index != -1) {
+                        data[index] = res.data.solvelog[i].score;
+                    }
+                    if (data[j] == undefined) {
+                        data[j] = 0;
+                    }
+                }
+            }
+        }
+
+        setTimeout(function () {
+            $(".loading").hide();
+            $(".i-card-main").show();
+            new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{                        
+                        data: data,
+                        label: "分数",
+                        borderColor: "#28c76f",
+                        backgroundColor: "rgba(40, 199, 111, 0.3)",
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        },                            
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            pages(res)
+        }, 500);
     })
 })
 </script>

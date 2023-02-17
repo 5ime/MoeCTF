@@ -45,7 +45,7 @@
                         <div class="col-md-6 mb-3">
                         <label>挑战附件</label>
                             <div class="custom-file">
-                                <input type="file" onchange="postData()" id="uploadFile" class="custom-file-input" id="customFile">
+                                <input type="file" onchange="postFile()" id="uploadFile" class="custom-file-input" id="customFile">
                                 <label class="custom-file-label" for="customFile">Choose file</label>
                                 <span class="fileurl" style="display: none;"></span>
                             </div>
@@ -156,22 +156,23 @@ var urlArr = window.location.href.split('/');
 var last = urlArr[urlArr.length - 1];
 $(document).ready(function(){
     $.get("/api/v1/getCategory",function(res){
-        if(res.code == 200 ){
-          var data = res.data;
-          html = '';
-            for(var i = 0; i < data.length; i++){
-              html += '<option>'+data[i].name+'</option>';
-            }
-            $(".custom-select").eq(0).append(html);
-        }else{
-            layer.msg(data.msg);
+        if(res.code != 200 ){
+            layer.msg(res.msg);
+            return;
         }
+
+        const data = res.data;
+        html = '';
+        for(let i = 0; i < data.length; i++){
+            html += '<option>'+data[i].name+'</option>';
+        }
+        $(".custom-select").eq(0).append(html);
     });
 
     $.get('/api/v1/getChallengeAllInfo/' + last, function (res) {
-        var html = "";
+        let html = "";
         if (res.code == 200) {
-            var data = res.data;
+            const data = res.data;
             $("#challenges #title").val(data.title);
             $(".challenge-info .title").text(data.title);
             $("#challenges #category").val(data.category);
@@ -191,7 +192,7 @@ $(document).ready(function(){
             if(data.download){
                 $(".but .download").show();
                 $(".download a").attr('href','/' + data.download);       
-                var download = data.download.split('\\');
+                const download = data.download.split('\\');
                 $(".custom-file-label").text(download[download.length - 1]);
             }
             setTimeout(function () {
@@ -206,18 +207,22 @@ $(document).ready(function(){
 });
 
 $("form").on("click",".btn-primary",function(){
-  var title = $("#challenges #title").val();
-    var category = $("#challenges #category").val();
-    var score = $("#challenges #score").val();
-    var money = $("#challenges #money").val();
-    var content = $("#challenges #content").val();
-    var hint = $("#challenges #hint").val();
-    var tags = $("#challenges #tags").val();
-    var flag = $("#challenges #flag").val();
-    var state = $("#challenges #state").val();
-    var fileurl = $("#challenges .fileurl").text();
+    const title = $("#challenges #title").val();
+    const category = $("#challenges #category").val();
+    const score = $("#challenges #score").val();
+    const money = $("#challenges #money").val();
+    const content = $("#challenges #content").val();
+    const hint = $("#challenges #hint").val();
+    const tags = $("#challenges #tags").val();
+    const flag = $("#challenges #flag").val();
+    let state = $("#challenges #state").val();
+    const fileurl = $("#challenges .fileurl").text();
     state = state == "Hidden" ? 0 : 1;
-    var data = {
+    if(!title || !score || !flag){
+        layer.msg("标题、分数、flag不能为空");
+        return;
+    }
+    const data = {
         id: last,
         title:title,
         category:category,
@@ -231,20 +236,20 @@ $("form").on("click",".btn-primary",function(){
         download:fileurl
     }
     $.post("/api/v1/editChallenge",data,function(res){
-        if(res.code == 200 ){
+        if(res.code != 200 ){
             layer.msg(res.msg);
-            setTimeout(function(){
-                window.location.reload();
-            },500);
-        }else{
-            layer.msg(res.msg);
+            return;
         }
+        layer.msg(res.msg);
+        setTimeout(function(){
+            window.location.reload();
+        },500);
     });
     return false;
 });
 
-function postData() {
-    var formData = new FormData();
+function postFile() {
+    const formData = new FormData();
     formData.append("id", last);
     formData.append("file", $("#uploadFile")[0].files[0]);
     $.ajax({
@@ -255,7 +260,7 @@ function postData() {
         contentType: false, 
         dataType: 'text',
         success: function (res) {         
-            var data = JSON.parse(res);
+            const data = JSON.parse(res);
             if (data.code == 200) {
                 layer.msg(data.msg, {icon: 1});
                 $('.custom-file label').text(data.data.name);

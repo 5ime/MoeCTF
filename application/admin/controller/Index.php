@@ -45,4 +45,14 @@ class Index extends Base
     {
         return $this->settingModel->getSubmitList();
     }
+
+    public function getSystemInfo()
+    {
+        return $this->settingModel->getSystemInfo();
+    }
+
+    public function getServerInfo()
+    {
+        return $this->settingModel->getServerInfo();
+    }
 }

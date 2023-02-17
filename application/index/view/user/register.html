@@ -61,8 +61,8 @@
     });
 
     $("#password").blur(function () {
-        var password = $("#password").val();
-        var reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/;
+        const password = $("#password").val();
+        const reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/;
         if (!reg.test(password)) {
             $('#pass-tips').css('display', 'inline');
         } else {
@@ -71,8 +71,8 @@
     });
 
     $("#topassword").blur(function () {
-        var password = $("#password").val();
-        var topassword = $("#topassword").val();
+        const password = $("#password").val();
+        const topassword = $("#topassword").val();
         if (password != topassword) {
             $('#topass-tips').css('display', 'inline');
         } else {
@@ -81,8 +81,8 @@
     });
 
     $("#email").blur(function () {
-        var email = $("#email").val();
-        var reg = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
+        const email = $("#email").val();
+        const reg = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
         if (!reg.test(email)) {
             $('#mail—tips').css('display', 'inline');
         } else {
@@ -91,11 +91,11 @@
     });
 
     $('#register').click(function() {
-        var username = $('input[name=username]').val();
-        var password = $('input[name=password]').val();
-        var email= $("input[name='email']").val();
-        var checkcode = $('input[name=checkcode]').val();
-        var check = $('#check').val();
+        const username = $('input[name=username]').val();
+        const password = $('input[name=password]').val();
+        const email= $("input[name='email']").val();
+        const checkcode = $('input[name=checkcode]').val();
+        const check = $('#check').val();
         $.ajax({
             url: "/user/register.html",
             type: 'post',
@@ -119,7 +119,7 @@
     })
 
     function ifPassword(){
-        var one = document.getElementById("password").value;
+        const one = document.getElementById("password").value;
         let regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,31}$/;
 
         if (!regex.test(one)) {
@@ -128,8 +128,7 @@
             document.getElementById("pass-tips").style.display = "none";
         }
 
-        var two = document.getElementById("topassword").value;
-        console.log(two);
+        const two = document.getElementById("topassword").value;
         if (one != two && two != '' ){
             document.getElementById("topass-tips").style.display = "inline";
         }else{

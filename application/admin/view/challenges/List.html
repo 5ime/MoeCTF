@@ -26,70 +26,63 @@
 <script>
 $(".loading").show();
 $(".i-card-main").eq(1).hide();
-var page = getUrlParam("page") || 1;
 
 $(document).ready(function(){
     $.get("/api/v1/getChallengeList?page=" + page,function(res){
-        var data = res.data.data;
-        var html = "";
-        if(res.code == 200 ){
-            for(var i = 0; i < data.length; i++){
-                html += "<tr><th scope='row'>" + data[i].id + "</th>";
-                html += "<td>" + data[i].title + "</td>";
-                html += "<td>" + data[i].category + "</td>";
-                html += "<td>" + data[i].score + "</td>";
-                if(data[i].state){
-                    html += "<td><span class='badge badge-success state' id='" + data[i].id + "'>显示</span>";
-                }else{
-                    html += "<td><span class='badge badge-secondary state' id='" + data[i].id + "'>隐藏</span>";
-                }
-                html += " <span class='badge badge-primary' id='" + data[i].id + "'>修改</span> <span class='badge badge-danger' id='" + data[i].id + "'>删除</span></td></td>";
-            }
-            pages(res)
-            $("tbody").html(html);
-            $(".loading").hide();
-            $(".i-card-main").eq(1).show();
-        }else{
-            layer.msg(data.msg);
+        if (res.code != 200) {
+            layer.msg(res.msg);
+            return;
         }
+        
+        const data = res.data.data;
+        let html = "";
+        for(let i = 0, len = data.length; i < len; i++){
+            const {id, title, category, score, state} = data[i];
+            const badgeText = state ? '显示' : '隐藏';
+            html += `<tr><th scope='row'>${id}</th><td>${title}</td><td>${category}</td><td>${score}</td>`;
+            html += `<td><span class='badge ${state ? 'badge-success' : 'badge-secondary'} state' id='${id}'>${badgeText}</span>`;
+            html += ` <span class='badge badge-primary' id='${id}'>修改</span> <span class='badge badge-danger' id='${id}'>删除</span></td></td>`;
+        }
+        pages(res)
+        $("tbody").html(html);
+        $(".loading").hide();
+        $(".i-card-main").eq(1).show();
     });
 });
 
-$("tbody").on("click","span",function(){
-    var id = $(this).attr("id");
-    var value = $(this)[0].classList[1]
+$("tbody").on("click", "span", function(){
+    const id = $(this).attr("id");
+    const value = $(this).hasClass("state") ? ($(this).hasClass("badge-success") ? 'display' : 'hidden') : '';
     if($(this).hasClass("badge-primary")){
         window.location.href = "/admin/editChallenge/" + id;
-    }else if($(this).hasClass("state")){
-        value.indexOf("success") >= 0 ? valueId = 'display' : valueId = 'hidden'
-        $.post("/api/v1/editChallengeState",{"value":valueId, "id":id},function(res){
+    } else if(value){
+        $.post("/api/v1/editChallengeState", {"value":value, "id":id}, function(res){
             if(res.code == 200){
                 layer.msg(res.msg);
                 setTimeout(function(){
                     window.location.reload();
-                },500);
-            }else{
+                }, 500);
+            } else {
                 layer.msg(res.msg);
             }
         });
-    }else{
-        layer.alert('确定要删除此用户吗！？', {
-		icon: 5,
-		btn: ['确定', '取消'],
-		yes: function(index) {
-			layer.close(index);
-            $.post("/api/v1/deleteChallenge",{"id":id},function(res){
+    } else {
+        layer.confirm('确定要删除此挑战吗！？', {
+            icon: 5,
+            btn: ['确定', '取消']
+        }, function(){
+            $.post("/api/v1/deleteChallenge", {"id":id}, function(res){
                 if(res.code == 200){
                     layer.msg(res.msg);
                     setTimeout(function(){
                         window.location.reload();
-                    },1000);
-                }else{
+                    }, 1000);
+                } else {
                     layer.msg(res.msg);
                 }
             });
-        }
-    });}
+        });
+    }
 });
 
 </script>

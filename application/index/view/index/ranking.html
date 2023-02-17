@@ -27,25 +27,26 @@
 <script>
 $(".loading").show();
 $(".i-card-main").eq(1).hide();
-var page = getUrlParam("page") || 1;
+
 $(document).ready(function(){
     $.get("/api/v1/getAllRank?page=" + page, function(res){
-        if(res.code == 200 ){
-            var data = res.data.data;
-            var html = "";
-            for(var i = 0; i < data.length; i++){
-                html += "<tr><th scope='row'>" + (i+1) + "</th><td><a href='/home/" + data[i].id + "' target='_blank'>" + data[i].username + "</a></td><td>" + data[i].scores + "</td><td>" + timestampToTime(data[i].time) + "</td></tr>";
-            }
-            $("tbody").html(html);
-            setTimeout(function () {
-                $(".loading").hide();
-                $(".i-card-main").eq(1).show();
-                pages(res)
-            }, 500);
-        }else{
+        if(res.code != 200 ){
             layer.msg(res.msg);
             $(".loading").hide();
+            return;
         }
+
+        const data = res.data.data;
+        let html = "";
+        for(let i = 0; i < data.length; i++){
+            html += "<tr><th scope='row'>" + (i+1) + "</th><td><a href='/home/" + data[i].id + "' target='_blank'>" + data[i].username + "</a></td><td>" + data[i].scores + "</td><td>" + timestampToTime(data[i].time) + "</td></tr>";
+        }
+        $("tbody").html(html);
+        setTimeout(function () {
+            $(".loading").hide();
+            $(".i-card-main").eq(1).show();
+            pages(res)
+        }, 500);
     });
 });
 </script>

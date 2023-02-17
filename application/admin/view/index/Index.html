@@ -1,4 +1,5 @@
 {include file="header" title="$title" /}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="page-title i-card-main">
         <i class="iconfont icon-page"></i>
         <span>DASHBOARD PAGE</span>
@@ -6,20 +7,172 @@
     <div class="row">
         <div class="col-sm">
             <div class="i-card-main">
-                <span>用户数量 2000</span>
+                <span id="user">用户总数 0</span>
             </div>
         </div>
         <div class="col-sm">
             <div class="i-card-main">
-                <span>挑战数量 2000</span>
+                <span id="challenge">题目总数 0</span>
             </div>
         </div>
         <div class="col-sm">
             <div class="i-card-main">
-                <span>当前在线 2000</span>
+                <span id="online">当前在线 0</span>
             </div>
         </div>
     </div>
+    
+    <div class="row">
+        <div class="col-sm">
+            <div class="i-card-main">
+                <canvas id="load"></canvas>
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="i-card-main">
+                <canvas id="mem"></canvas>
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="i-card-main">
+                <canvas id="cpu"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="i-card-main">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>题目</th>
+                <th>通过数</th>
+                <th>通过率</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <nav id="page" style="display: none;">
+            <ul class="pagination justify-content-center">
+            </ul>
+        </nav>
+    </div>
+
     {include file="footer" /}
 </div>
+<script>
+
+const load = new Chart($('#load')[0].getContext('2d'), {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: '当前负载',
+            data: [],
+            fill: false,
+            borderColor: '#28c76f',
+            tension: 0.1,
+            backgroundColor: 'rgba(40, 199, 111, 0.3)',
+        }]
+    },
+    options: {
+        scales: {
+            y: {beginAtZero: true}
+        }
+    }
+});
+const mem = new Chart($('#mem')[0].getContext('2d'), {
+    type: "line",
+    data: {
+        labels: [],
+        datasets: [{
+            label: "内存使用率",
+            data: [],
+            fill: false,
+            borderColor: '#28c76f',
+            tension: 0.1,
+            backgroundColor: 'rgba(40, 199, 111, 0.3)',
+        }]
+    },
+    options: {
+        scales: {
+            y: {beginAtZero: true}
+        }
+    }
+});
+
+const cpu = new Chart($('#cpu')[0].getContext('2d'), {
+    type: "line",
+    data: {
+        labels: [],
+        datasets: [{
+            label: "CPU使用率",
+            data: [],
+            fill: false,
+            borderColor: '#28c76f',
+            tension: 0.1,
+            backgroundColor: 'rgba(40, 199, 111, 0.3)',
+        }]
+    },
+    options: {
+        scales: {
+            y: {beginAtZero: true}
+        }
+    }
+});
+
+$(".i-card-main").hide();
+$(".loading").show();
+
+$(document).ready(function(){
+    $.get("/api/v1/getSystemInfo?page=" + page,function(res){
+        $('#user').html(`用户总数 ${res.data.count.users}`);
+        $('#challenge').html(`题目总数 ${res.data.count.challenges}`);
+        const data = res.data.data.data;
+        let html = "";
+        for(let i = 0, len = data.length; i < len; i++){
+            const {id, title, solve, pass_rate} = data[i];
+            html += `<tr><th scope='row'>${id}</th><td>${title}</td><td>${solve}</td><td>${pass_rate}%</td></tr>`;
+        }
+        pages(res.data);
+        $("tbody").html(html);
+    });
+    updateChart();
+});
+
+function updateChart() {
+    const loadLabels = load.data.labels;
+    const memLabels = mem.data.labels;
+    const cpuLabels = cpu.data.labels;
+    const time = new Date().toLocaleTimeString();
+    loadLabels.push(time);
+    memLabels.push(time);
+    cpuLabels.push(time);
+    if (loadLabels.length > 10) {
+        loadLabels.shift();
+        memLabels.shift();
+        cpuLabels.shift();
+    }
+    $.get('/api/v1/getServerInfo', res => {
+        const loadData = load.data.datasets[0].data;
+        const memData = mem.data.datasets[0].data;
+        const cpuData = cpu.data.datasets[0].data;
+        loadData.push(res.load_percentage);
+        memData.push(res.mem_usage);
+        cpuData.push(res.cpu_percentage);
+        $('#online').html(`当前在线 ${res.online_count}`);
+        if (loadData.length > 10) {
+            loadData.shift();
+            memData.shift();
+            cpuData.shift();
+        }
+        [load, mem, cpu].forEach(chart => chart.update());
+        $(".i-card-main").show();
+        $(".loading").hide();
+        setTimeout(updateChart, 10000);
+    });
+}
+
+
+</script>
  </body></html>

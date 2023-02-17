@@ -47,10 +47,10 @@
     });
 
     $('#post').click(function() {
-        var username = $('input[name=username]').val();
-        var password = $('input[name=password]').val();
-        var checkcode = $('input[name=checkcode]').val();
-        var check = $('#check').val();
+        const username = $('input[name=username]').val();
+        const password = $('input[name=password]').val();
+        const checkcode = $('input[name=checkcode]').val();
+        const check = $('#check').val();
         $.ajax({
             url: "{:url('user/login')}",
             type: 'post',

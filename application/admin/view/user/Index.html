@@ -29,7 +29,6 @@
 <script>
 $(".loading").show();
 $(".i-card-main").eq(1).hide();
-var page = getUrlParam("page") || 1;
 
 $('.add').click(function(){
     $('#userModal').modal('show');
@@ -41,38 +40,37 @@ $('#userModal').on('hidden.bs.modal', function (e) {
 
 $(document).ready(function(){
     $.get("/api/v1/getUserList?page=" + page,function(res){
-        if(res.code == 200 ){
-            var data = res.data.data;
-            var html = "";
-            for(var i = 0; i < data.length; i++){
-                html += "<tr><th scope='row'>" + data[i].id + "</th>";
-                html += "<td><a href='/home/" + data[i].id + "' target='_blank'>" + data[i].username + "</a></td>";
-                html += "<td>" + data[i].email + "</td>";
-                if(data[i].website){
-                    html += "<td><a href='" + data[i].website + "' target='_blank'><div class='icon' style='color:#0066ff87;'><i class='iconfont icon-lianjie'></i></div></a></td>";
-                }else{
-                    html += "<td></td>";
-                }
-                
-                if(data[i].verify){
-                    html += "<td><span class='badge badge-info' id='" + data[i].id + "'>已验证</span>";
-                }else{
-                    html += "<td><span class='badge badge-warning' id='" + data[i].id + "'>未验证</span>";
-                }
-                if(data[i].state){
-                    html += " <span class='badge badge-success state' id='" + data[i].id + "'>显示</span>";
-                }else{
-                    html += " <span class='badge badge-secondary state' id='" + data[i].id + "'>隐藏</span>";
-                }
-                html += " <span class='badge badge-primary' data-toggle='modal' data-target='#usermodal' id='" + data[i].id + "'>修改</span> <span class='badge badge-danger' id='" + data[i].id + "'>删除</span></td></tr>";
-            }
-            pages(res)
-            $("tbody").html(html);
-            $(".loading").hide();
-            $(".i-card-main").eq(1).show();
-        }else{
-            layer.msg(res.msg);
+        if(res.code != 200 ){
+            layer.msg(res.data.msg);
+            return;
         }
+
+        const data = res.data.data;
+        let html = "";
+        for (let i = 0; i < data.length; i++) {
+        const { id, username, email, website, verify, state } = data[i];
+        const verifiedBadge = verify ? "已验证" : "未验证";
+        const stateBadge = state ? "显示" : "隐藏";
+
+        html += `
+            <tr>
+            <th scope='row'>${id}</th>
+            <td><a href='/home/${id}' target='_blank'>${username}</a></td>
+            <td>${email}</td>
+            <td>${website ? `<a href='${website}' target='_blank'><div class='icon' style='color:#0066ff87;'><i class='iconfont icon-lianjie'></i></div></a>` : ''}</td>
+            <td><span class='badge badge-${verify ? 'info' : 'warning'}' id='${id}'>${verifiedBadge}</span>
+                <span class='badge badge-${state ? 'success' : 'secondary'} state' id='${id}'>${stateBadge}</span>
+                <span class='badge badge-primary' data-toggle='modal' data-target='#usermodal' id='${id}'>修改</span>
+                <span class='badge badge-danger' id='${id}'>删除</span>
+            </td>
+            </tr>`;
+        }
+
+        pages(res)
+        $("tbody").html(html);
+        $(".loading").hide();
+        $(".i-card-main").eq(1).show();
+
 
     });
 });
@@ -94,12 +92,12 @@ $('#userModal').on('show.bs.modal', function (e) {
 })
 
 $("tbody").on("click","span",function(){
-    var id = $(this).attr("id");
-    var value = $(this)[0].classList[1]
+    const id = $(this).attr("id");
+    const value = $(this)[0].classList[1]
     if($(this).hasClass("badge-primary")){
         $('#userModal').modal('show');
         $.post("/api/v1/getUserAllInfo",{"id":id},function(res){
-            var data = res.data;
+            const data = res.data;
             if(res.code == 200){
                 $('#userModal .name').text(res.data.username);
                 if(res.data.avatar){
@@ -164,14 +162,14 @@ $("tbody").on("click","span",function(){
 });
 
 $('#userModal').on('click', '#su_update', function () {
-    var avatar = $('#userModal .avatar img').attr('src');
-    var id = $('#userModal span[name="id"]').text();
-    var username = $('#userModal input[name="username"]').val();
-    var email = $('#userModal input[name="email"]').val();
-    var website = $('#userModal input[name="website"]').val();
-    var content = $('#userModal input[name="content"]').val();
-    var scores = $('#userModal input[name="scores"]').val();
-    var password = $('#userModal input[name="password"]').val();
+    const avatar = $('#userModal .avatar img').attr('src');
+    const id = $('#userModal span[name="id"]').text();
+    const username = $('#userModal input[name="username"]').val();
+    const email = $('#userModal input[name="email"]').val();
+    const website = $('#userModal input[name="website"]').val();
+    const content = $('#userModal input[name="content"]').val();
+    const scores = $('#userModal input[name="scores"]').val();
+    const password = $('#userModal input[name="password"]').val();
     if($('#userModal .modal-title').text() == '新增用户'){
         $.post("/api/v1/addUser",{"avatar":avatar,"username":username,"email":email,"website":website,"content":content},function(res){
             if(res.code == 200){
@@ -199,7 +197,7 @@ $('#userModal').on('click', '#su_update', function () {
 });
 
 function postData() {
-    var formData = new FormData();
+    const formData = new FormData();
     formData.append('id', $('#userModal span[name="id"]').text());
     formData.append("file", $("#userModal #uploadImage")[0].files[0]);
     $.ajax({
@@ -210,7 +208,7 @@ function postData() {
         contentType: false, 
         dataType: 'text',
         success: function (res) {         
-            var data = JSON.parse(res);
+            const data = JSON.parse(res);
             if (data.code == 200) {
                 layer.msg(data.msg, {icon: 1});
                 $('#editUser img').attr('src', data.data.url);

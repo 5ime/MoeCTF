@@ -91,3 +91,7 @@ Route::rule('api/v1/editSettings','admin/index/editSettings');
 
 /* SUBMIT */
 Route::rule('api/v1/getSubmitList','admin/index/getSubmitList');
+
+/* SYSTEM */
+Route::rule('api/v1/getServerInfo','admin/index/getServerInfo');
+Route::rule('api/v1/getSystemInfo','admin/index/getSystemInfo');

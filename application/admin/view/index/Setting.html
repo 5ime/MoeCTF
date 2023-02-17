@@ -76,46 +76,47 @@ $('.loading').show();
 $('.i-card-main').eq(1).hide();
 $(document).ready(function(){
     $.get("/api/v1/getSettingsInfo",function(res){
-        if(res.code == 200 ){
-            $("#title").val(res.data.title);
-            $("#desc").val(res.data.desc);
-            $("#keywords").val(res.data.keywords);
-            $("#state option").each(function(){
-                if($(this).text() == res.data.state){
-                    $(this).attr("selected",true);
-                }
-            });
-            $("#verify option").each(function(){
-                if($(this).text() == res.data.verify){
-                    $(this).attr("selected",true);
-                }
-            });
-            $("#stats").val(res.data.stats);
-            $("#smtp").val(res.data.smtp);
-            $("#smtpName").val(res.data.smtp_name);
-            $("#smtpPass").val(res.data.smtp_pass);
-            $("#css").val(res.data.css);
-            setTimeout(function(){
-                $('.loading').hide();
-                $('.i-card-main').eq(1).show();
-            },500);
-        }else{
-            layer.msg(data.msg);
+        if(res.code != 200 ){
+            layer.msg(res.msg);
+            return;
         }
+
+        $("#title").val(res.data.title);
+        $("#desc").val(res.data.desc);
+        $("#keywords").val(res.data.keywords);
+        $("#state option").each(function(){
+            if($(this).text() == res.data.state){
+                $(this).attr("selected",true);
+            }
+        });
+        $("#verify option").each(function(){
+            if($(this).text() == res.data.verify){
+                $(this).attr("selected",true);
+            }
+        });
+        $("#stats").val(res.data.stats);
+        $("#smtp").val(res.data.smtp);
+        $("#smtpName").val(res.data.smtp_name);
+        $("#smtpPass").val(res.data.smtp_pass);
+        $("#css").val(res.data.css);
+        setTimeout(function(){
+            $('.loading').hide();
+            $('.i-card-main').eq(1).show();
+        },500);
     });
 });
 
 $('.btn-primary').click(function(){
-    var title = $("#title").val();
-    var desc = $("#desc").val();
-    var keywords = $("#keywords").val();
-    var state = $("#state").val();
-    var verify = $("#verify").val();
-    var stats = $("#stats").val();
-    var smtp = $("#smtp").val();
-    var smtpName = $("#smtpName").val();
-    var smtpPass = $("#smtpPass").val();
-    var css = $("#css").val();
+    const title = $("#title").val();
+    const desc = $("#desc").val();
+    const keywords = $("#keywords").val();
+    const state = $("#state").val();
+    const verify = $("#verify").val();
+    const stats = $("#stats").val();
+    const smtp = $("#smtp").val();
+    const smtpName = $("#smtpName").val();
+    const smtpPass = $("#smtpPass").val();
+    const css = $("#css").val();
     $.post("/api/v1/editSettings",{
         title:title,
         desc:desc,
@@ -128,14 +129,14 @@ $('.btn-primary').click(function(){
         smtp_pass:smtpPass,
         css:css
     },function(res){
-        if(res.code == 200 ){
+        if(res.code != 200 ){
             layer.msg(res.msg);
-            setTimeout(function(){
-                window.location.reload();
-            },500);
-        }else{
-            layer.msg(res.msg);
+            return;
         }
+        layer.msg(res.msg);
+        setTimeout(function(){
+            window.location.reload();
+        },500);
     });
     return false;
 });

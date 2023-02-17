@@ -45,13 +45,12 @@
             <ul class="pagination justify-content-center">
             </ul>
         </nav>
-    </div>  
+    </div>
     {include file="footer" /}
 </div>
 <script>
 $(".loading").show();
 $(".i-card-main").eq(1).hide();
-var page = getUrlParam("page") || 1;
 
 $('.add').click(function(){
     $('#sortmodal .modal-title').text('新增分类')
@@ -60,29 +59,29 @@ $('#sortmodal .modal-title').text('修改分类')
 
 $(document).ready(function(){
     $.get("/api/v1/getSortList?page=" + page,function(res){
-        if(res.code == 200 ){
-            var data = res.data.data;
-            var html = "";
-            for(var i = 0; i < data.length; i++){
-                html += "<tr><th scope='row'>" + data[i].id + "</th>";
-                html += "<td>" + data[i].name + "</td>";             
-                html += "<td>" + data[i].count + "</td>";   
-                html += "<td><span class='badge badge-primary' data-toggle='modal' data-target='#sortmodal' id='" + data[i].id + "'>修改</span> <span class='badge badge-danger' id='" + data[i].id + "'>删除</span></td></tr>";
-            }
-            pages(res)
-            $("tbody").html(html);
-            $(".loading").hide();
-            $(".i-card-main").eq(1).show();
-        }else{
-            layer.msg(data.msg);
+        if(res.code != 200 ){
+            layer.msg(res.msg);
+            return;
         }
 
+        const data = res.data.data;
+        let html = "";
+        for(let i = 0; i < data.length; i++){
+            html += "<tr><th scope='row'>" + data[i].id + "</th>";
+            html += "<td>" + data[i].name + "</td>";             
+            html += "<td>" + data[i].count + "</td>";   
+            html += "<td><span class='badge badge-primary' data-toggle='modal' data-target='#sortmodal' id='" + data[i].id + "'>修改</span> <span class='badge badge-danger' id='" + data[i].id + "'>删除</span></td></tr>";
+        }
+        pages(res)
+        $("tbody").html(html);
+        $(".loading").hide();
+        $(".i-card-main").eq(1).show();
     });
 });
 
 $("tbody").on("click","span",function(){
-    var id = $(this).attr("id");
-    var name = $(this).parent().parent().children().eq(1).text();
+    const id = $(this).attr("id");
+    const name = $(this).parent().parent().children().eq(1).text();
     if($(this).hasClass("badge-primary")){
         $('#sortmodal .modal-body input[name="sortname"]').val(name);
         $('#sortmodal .modal-body input[name="sortid"]').val(id);
@@ -107,8 +106,12 @@ $("tbody").on("click","span",function(){
 });
 
 $('#sortBut #update').click(function(){
-    var name = $('#sortmodal .modal-body input[name="sortname"]').val();
-    var id = $('#sortmodal .modal-body input[name="sortid"]').val();
+    const name = $('#sortmodal .modal-body input[name="sortname"]').val();
+    const id = $('#sortmodal .modal-body input[name="sortid"]').val();
+    if(name == ""){
+        layer.msg("分类名不能为空");
+        return;
+    }
     $.post("/api/v1/editSort",{"id":id,"name":name},function(res){
         if(res.code == 200){
             layer.msg(res.msg);
