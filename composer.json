@@ -1,0 +1,12 @@
+{
+    "config": {
+        "allow-plugins": {
+            "topthink/think-installer": true
+        }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.7",
+        "topthink/think-captcha": "2.0.*",
+        "topthink/think-worker": "2.0.*"
+    }
+}

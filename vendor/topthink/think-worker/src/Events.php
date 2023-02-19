@@ -12,6 +12,7 @@ namespace think\worker;
 
 use GatewayWorker\Lib\Gateway;
 use Workerman\Worker;
+
 /**
  * Worker 命令行服务类
  */
@@ -58,7 +59,7 @@ class Events
      */
     public static function onWebSocketConnect($client_id, $data)
     {
-        // var_export($data);
+        var_export($data);
     }
 
     /**
@@ -83,7 +84,7 @@ class Events
      */
     public static function onClose($client_id)
     {
-        // GateWay::sendToAll("client[$client_id] logout\n");
+        GateWay::sendToAll("client[$client_id] logout\n");
     }
 
     /**
@@ -95,6 +96,6 @@ class Events
      */
     public static function onWorkerStop(Worker $businessWorker)
     {
-        // echo "WorkerStop\n";
+        echo "WorkerStop\n";
     }
 }
