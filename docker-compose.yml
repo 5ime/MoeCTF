@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  php:
+    build: .
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - moe-network
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - moe-network
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: moectf
+      MYSQL_USER: moectf
+      MYSQL_PASSWORD: moectf
+      MYSQL_DATABASE: moectf
+    volumes:
+      - ./sql/moectf.sql:/docker-entrypoint-initdb.d/moectf.sql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - moe-network
+
+networks:
+  moe-network:
+    driver: bridge
