@@ -24,6 +24,11 @@ CREATE TABLE `categorys`  (
 ) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Records of categorys
+-- ----------------------------
+INSERT INTO `categorys` VALUES (1, 'Misc');
+
+-- ----------------------------
 -- Table structure for challenges
 -- ----------------------------
 DROP TABLE IF EXISTS `challenges`;

@@ -47,7 +47,9 @@ $(".i-card-main").eq(1).hide();
 $(document).ready(function(){
     $.get("/api/v1/getSubmitList?page=" + page,function(res){
         if(res.code !== 200) {
-            layer.msg(res.data.msg);
+            layer.msg(res.msg);
+            $(".loading").hide();
+            $(".i-card-main").eq(1).show();
             return;
         }
         const data = res.data.data;

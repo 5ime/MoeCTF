@@ -2,6 +2,9 @@
 
 A Simple, Free CTF Platform 一个简单、免费的CTF平台
 
+> [!NOTE]
+> 正在缓慢重构中...
+
 ## 安装
 
 1. 下载源码：
@@ -16,25 +19,7 @@ git clone https://github.com/5ime/moectf.git
 docke-compose up -d
 ```
 
-3. 查看容器ID：
-
-```
-docker ps
-```
-
-4. 进入PHP容器：
-
-```
-docker exec -it {id} bash
-```
-
-5. 启动Worker：
-
-```
-php think worker:gateway -d
-```
-
-6. 访问网站
+3. 访问网站
 
 浏览器访问localhost即可访问MoeCTF系统，管理员账号密码为admin/123456。
 

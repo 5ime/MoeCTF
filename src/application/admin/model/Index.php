@@ -36,7 +36,10 @@ class Index extends Model
     {
         $id = input('get.id');
         $data = Db::name('submit')->order('id', 'desc')->when($id, function($query) use ($id) {return $query->where('id', $id);})->paginate(10)->toArray();
-
+        if (empty($data['data'])) {
+            return returnJsonData(202,'无提交记录');
+        }
+        
         $userIds = array_column($data['data'], 'uid');
         $challengeIds = array_column($data['data'], 'cid');
 

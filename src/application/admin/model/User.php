@@ -87,6 +87,38 @@ class User extends Model
         return returnJsonData(201, 'error');
     }
     
+    public function addUser()
+    {   
+        $arr = [
+            'username' => input('post.username'),
+            'email' => input('post.email'),
+            'website' => input('post.website'),
+            'content' => input('post.content'),
+        ];
+    
+        if (!filter_var($arr['email'], FILTER_VALIDATE_EMAIL)) {
+            return returnJsonData(201, 'Please enter the correct email address');
+        }
+    
+        if (!empty(input('post.password'))) {
+            $arr['password'] = hashPwd(input('post.password'));
+        }
+    
+        if (!empty($arr['username']) && Db::name('users')->where('username', $arr['username'])->find()) {
+            return returnJsonData(201, 'Username already exists');
+        }
+    
+        if ($arr['email']) {
+            $arr['token'] = md5(rand(100000, 999999) . time());
+            $arr['verify'] = 0;
+        }
+
+        if (Db::name('users')->insert($arr)){
+            return returnJsonData(200, 'success');
+        }
+        return returnJsonData(201, 'error');
+    }
+
 
     public function uploadAvatar()
     {

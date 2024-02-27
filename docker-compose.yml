@@ -5,6 +5,8 @@ services:
     build: .
     volumes:
       - ./src:/var/www/html
+    depends_on:
+      - mysql
     networks:
       - moe-network
 
@@ -14,7 +16,9 @@ services:
       - "80:80"
     volumes:
       - ./src:/var/www/html
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./conf/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
     networks:
       - moe-network
 

@@ -164,7 +164,7 @@ class User extends Model
                 $arr['password'] = hashPwd($new_password);
             }
         }
-        array_filter($arr);
+        $arr = array_filter($arr);
         if ($arr['email']) {
             $arr['token'] = md5(rand(100000,999999) . time());
             $arr['verify'] = 0;

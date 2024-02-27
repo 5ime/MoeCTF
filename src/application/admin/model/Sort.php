@@ -35,6 +35,10 @@ class Sort extends Model
 
     public function deleteSort()
     {   
+        $count = Db::name('categorys')->count();
+        if ($count == 1) {
+            return returnJsonData(201,'必须保留一个');
+        }
         $id = input('post.id');
         $data = Db::name('categorys')->where('id',$id)->delete();
         if ($data) {

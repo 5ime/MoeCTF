@@ -156,8 +156,10 @@ $(".i-card-main").eq(1).hide();
 
 $(document).ready(function(){
     $.get("/api/v1/getCategory",function(res){
-        if(res.code != 200 ){
+        if(res.code !== 200) {
             layer.msg(res.msg);
+            $(".loading").hide();
+            $(".i-card-main").eq(1).show();
             return;
         }
 
